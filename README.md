@@ -4,7 +4,7 @@
 
 O PROCON de Joinville/SC, disponibiliza, por meio do seu _site_, [o preço dos combustíveis em todos os postos de gasolina do município](https://www.joinville.sc.gov.br/publicacoes/pesquisas-de-precos-combustiveis-2023/).
 
-Assim, o objetivo deste projeto é coletar esses dados e alimentar um banco de dados, a partir do qual é gerado um _dashboard_.
+Assim, o objetivo deste projeto é coletar esses dados e alimentar um banco de dados, a partir do qual é gerado um _dashboard_ e tabelas nas quais é possível fazer a filtragem por bairro.
 
 O _back-end_ do projeto é estruturado em três módulos:
 
@@ -26,8 +26,9 @@ O _back-end_ do projeto é estruturado em três módulos:
 ## Execução
 
 * TODO: escrever Dockerfiles
-XXX
-
+* TODO: configurar Actions para rodar os testes automaticamente
+* TODO: automatizar o _deploy_ 
+  
 ## Licença
 
 Licenciado sob a licença MIT; ver o arquivo LICENSE para mais detalhes.
