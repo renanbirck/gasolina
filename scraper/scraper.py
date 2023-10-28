@@ -30,7 +30,7 @@ def download_file(url: str, subdirectory: str):
     try:
         mkdir(subdirectory)
     except(FileExistsError):
-        logging.warn(f"O diretório {subdirectory} já existe.")
+        logging.warn(f"O diretório {subdirectory} já existe (não tem nada de errado nisso).")
 
     downloaded = requests.get(url, allow_redirects=True)
 
@@ -39,5 +39,6 @@ def download_file(url: str, subdirectory: str):
     final_file_name = subdirectory + '/' + end_name
 
     logging.info(f"O nome do arquivo será {final_file_name}.")
-    open(final_file_name, 'wb').write(downloaded.content)
 
+    with open(final_file_name, 'wb') as f:
+        f.write(downloaded.content)
