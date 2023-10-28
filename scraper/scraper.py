@@ -3,6 +3,7 @@
 import logging, requests
 logging.basicConfig(level=logging.DEBUG)
 from bs4 import BeautifulSoup
+from os import mkdir
 
 goal_URL = lambda year: f"https://www.joinville.sc.gov.br/publicacoes/pesquisas-de-precos-combustiveis-{year}"
 
@@ -23,4 +24,20 @@ def get_PDFs_of_URL(url: str):
             links.append(link['href'])
     logging.info(f"Encontrei os links: {links}")
     return links
+
+def download_file(url: str, subdirectory: str):
+    """ Baixa o arquivo especificado, colocando ele no diretório informado em subdirectory. """
+    try:
+        mkdir(subdirectory)
+    except(FileExistsError):
+        logging.warn(f"O diretório {subdirectory} já existe.")
+
+    downloaded = requests.get(url, allow_redirects=True)
+
+    # Determinar e compor o nome do arquivo.
+    end_name = url.rsplit('/', 1)[1]
+    final_file_name = subdirectory + '/' + end_name
+
+    logging.info(f"O nome do arquivo será {final_file_name}.")
+    open(final_file_name, 'wb').write(downloaded.content)
 

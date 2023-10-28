@@ -2,7 +2,8 @@ import unittest, sys
 
 sys.path.append('..')
 
-import scraper 
+import scraper
+from os.path import isfile
 
 class TestScrap(unittest.TestCase):
     result = None
@@ -17,6 +18,16 @@ class TestScrap(unittest.TestCase):
         self.result = scraper.get_PDFs_of_URL(scraper.goal_URL('2023'))
         for link in self.result:
             self.assertEqual(link.endswith('.pdf'), True)
+
+    def test_can_download_PDF_files(self):
+        """ Verificar que conseguimos baixar os PDFs. """
+        self.result = scraper.get_PDFs_of_URL(scraper.goal_URL('2023'))
+        for pdf in self.result:
+            scraper.download_file(pdf, 'data')
+            pdf_end_name = pdf.split('/', -1)[-1]
+
+            print('>>> data/' + pdf_end_name)
+            self.assertEqual(isfile('data/' + pdf_end_name), True)
 
 if __name__ == '__main__':
     unittest.main()
