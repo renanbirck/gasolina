@@ -28,4 +28,6 @@ O _back-end_ do projeto é estruturado em três módulos:
 * TODO: escrever Dockerfiles
 XXX
 
+## Licença
 
+Licenciado sob a licença MIT; ver o arquivo LICENSE para mais detalhes.
