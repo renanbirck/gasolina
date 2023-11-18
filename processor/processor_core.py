@@ -17,10 +17,16 @@ class PDFProcessor:
         self.file_name = file_name
         self.process_PDF()
 
+    def get_text_of_page(self, number):
+        """ Retorna o texto da página 'number' (obs. a primeira página do PDF é zero)
+            já separado em linhas. """
+
+        return self.pages[number].get_textpage().get_text_range().split("\r\n")
+
     def process_PDF(self):
         print("entrei aqui")
         logging.info(f"Processando o PDF {self.file_name}.")
         self.pages = pdfium.PdfDocument(self.file_name)
         logging.info(f"Conseguimos! Ele tem {len(self.pages)} páginas.")
-        self.survey_title = self.pages[0].get_textpage().get_text_range().split("\r\n")[0] # eca
+        self.survey_title = self.get_text_of_page(0)[0]
 

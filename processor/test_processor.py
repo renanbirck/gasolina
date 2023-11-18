@@ -19,6 +19,7 @@ class TestProcessor(unittest.TestCase):
         self.assertEqual(len(processor.pages), 4)
 
     def test_can_get_survey_info(self):
+
         processor = processor_core.PDFProcessor(self.target)
        
         # Testar se a gente está na pesquisa certa.
