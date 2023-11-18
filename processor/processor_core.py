@@ -8,6 +8,8 @@ class PDFProcessor:
 
     file_name = None
     pages = None
+    content = None
+    survey_title = "xxx"
 
     def __init__(self, file_name=None):
         if not file_name:
@@ -20,3 +22,5 @@ class PDFProcessor:
         logging.info(f"Processando o PDF {self.file_name}.")
         self.pages = pdfium.PdfDocument(self.file_name)
         logging.info(f"Conseguimos! Ele tem {len(self.pages)} páginas.")
+        self.survey_title = self.pages[0].get_textpage().get_text_range().split("\r\n")[0] # eca
+
