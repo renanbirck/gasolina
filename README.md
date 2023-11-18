@@ -19,7 +19,7 @@ O _back-end_ do projeto é estruturado em três módulos:
 	* requests;
 	* BeautifulSoup.
 * Para o *processor*:
-	* pypdf2
+	* PyMuPDF (foi o que funcionou melhor **para este layout de PDF**);
 * TODO: definir como será feita a API
 * TODO: definir como será feito o front-end
 
