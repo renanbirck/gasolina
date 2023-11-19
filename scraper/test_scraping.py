@@ -22,12 +22,13 @@ class TestScrap(unittest.TestCase):
     def test_can_download_PDF_files(self):
         """ Verificar que conseguimos baixar os PDFs. """
         self.result = scraper_core.get_PDFs_of_URL(scraper_core.goal_URL('2023'))
+        target_directory = 'data'
         for pdf in self.result:
-            scraper_core.download_file(pdf, 'data')
+            scraper_core.download_file(pdf, target_directory)
             pdf_end_name = pdf.split('/', -1)[-1]
 
-            print('>>> data/' + pdf_end_name)
-            self.assertEqual(isfile('data/' + pdf_end_name), True)
+            print(f'>>> {target_directory}/{pdf_end_name}')
+            self.assertEqual(isfile(target_directory + '/' + pdf_end_name), True)
 
 if __name__ == '__main__':
     unittest.main()

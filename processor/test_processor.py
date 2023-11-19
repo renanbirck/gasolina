@@ -22,7 +22,9 @@ class TestProcessor(unittest.TestCase):
 
         processor = processor_core.PDFProcessor(self.target)
        
-        # Testar se a gente está na pesquisa certa.
+        # Testar se a gente está na pesquisa certa. Já serve para validar
+        # se o PDF foi corretamente lido.
+
         self.assertEqual(processor.survey_title, "Pesquisa de Preços - Combustíveis")
 
 if __name__ == '__main__':
