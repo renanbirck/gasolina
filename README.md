@@ -20,6 +20,7 @@ O _back-end_ do projeto é estruturado em três módulos:
 	* BeautifulSoup.
 * Para o *processor*:
 	* [pypdfium2](https://github.com/pypdfium2-team/pypdfium2) (foi o que funcionou melhor **para este layout de PDF** nos meus testes);
+* TODO: estruturar o DB, escrever as _queries_ SQL etc... 
 * TODO: definir como será feita a API
 * TODO: definir como será feito o front-end
 
