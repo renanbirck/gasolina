@@ -24,7 +24,7 @@ class Database:
     def create_tables(self):
         self.cursor.execute("CREATE TABLE IF NOT EXISTS Distribuidoras(\
                              IdDistribuidora INT PRIMARY KEY,\
-                             NomeDistribuidora VARCHAR(24) NOT NULL\
+                             NomeDistribuidora VARCHAR(24) UNIQUE NOT NULL\
                             );")
         self.cursor.execute("CREATE TABLE IF NOT EXISTS PostosGasolina(\
                                 IdPosto INT PRIMARY KEY,\

@@ -2,7 +2,7 @@ import unittest, sys
 
 sys.path.append('..')
 
-import database
+import database, sqlite3
 from os import remove
 from os.path import isfile
 
@@ -10,7 +10,9 @@ class TestDatabase(unittest.TestCase):
 
 
     def test_can_create_DB(self):
-        """ Verificar se o DB pode ser criado. """
+        """ Verificar se o DB pode ser criado, começando a partir de um DB virgem. """
+
+        remove('pesquisas_test.db')
 
         test_DB = database.Database('pesquisas_test.db')
         self.assertEqual(isfile('pesquisas_test.db'), True)
@@ -27,7 +29,15 @@ class TestDatabase(unittest.TestCase):
             self.assertIsNotNone(result)
 
     def test_adiciona_distribuidoras(self):
-        pass
+        test_DB = database.Database('pesquisas_test.db')
+
+        for distribuidora in ['ALFA', 'BETA', 'GAMA']:
+            test_DB.cursor.execute("INSERT INTO Distribuidoras(IdDistribuidora, NomeDistribuidora) VALUES(NULL,?);", (distribuidora,))
+
+        # tem que falhar, porque é repetida
+
+        with self.assertRaises(sqlite3.IntegrityError) as context:
+            test_DB.cursor.execute("INSERT INTO Distribuidoras(IdDistribuidora, NomeDistribuidora) VALUES(NULL,?);", ("ALFA",))
 
     def test_adiciona_postos(self):
         pass
