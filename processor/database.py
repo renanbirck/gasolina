@@ -47,6 +47,7 @@ class Database:
                                 PrecoGasolinaAditivada INTEGER,\
                                 PrecoEtanol INTEGER,\
                                 PrecoDiesel INTEGER,\
+                                PrecoGNV INTEGER,\
                                 FOREIGN KEY (IdPesquisa)\
                                     REFERENCES Pesquisas(IdPesquisa)\
                                     ON DELETE RESTRICT,\
