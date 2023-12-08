@@ -14,7 +14,10 @@ COPY ../requirements.txt .
 RUN pip install -r requirements.txt 
 RUN pip install --upgrade pip 
 
+# Para debugging, pode tirar se quiser
 RUN ls -la 
 
-# Rodar a aplicação
+# Rodar a aplicação. A aplicação escreve no diretório 'data',
+# então na hora de rodar o container precisa informar
+# podman run -d -v [ONDE ARMAZENAR OS DADOS NO HOST]:/app/data docker-scraper:latest
 CMD ["python", "scraper.py"]
