@@ -9,7 +9,7 @@ Assim, o objetivo deste projeto é coletar esses dados e alimentar um banco de d
 O _back-end_ do projeto é estruturado em três módulos:
 
 * **scraper**: faz a raspagem do site do PROCON e determina o arquivo PDF a ser baixado.
-* **processor**: processa o arquivo PDF, carregando os valores dele no banco de dados.
+* **parser**: processa o arquivo PDF, carregando os valores dele no banco de dados.
 * **api**: disponibiliza os dados coletados para o _front-end_.
 
 ## Requisitos
@@ -18,7 +18,7 @@ O _back-end_ do projeto é estruturado em três módulos:
 	* Python 3.11 ou mais recente;
 	* requests;
 	* BeautifulSoup.
-* Para o *processor*:
+* Para o parser:
 	* [pypdfium2](https://github.com/pypdfium2-team/pypdfium2) (foi o que funcionou melhor **para este layout de PDF** nos meus testes);
 	* TODO: continuar a parte de processamento do PDF
 * TODO: estruturar o DB, escrever as _queries_ SQL, ver o uso de um ORM etc...

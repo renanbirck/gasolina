@@ -4,7 +4,7 @@ import pypdfium2 as pdfium
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
-class PDFProcessor:
+class PDFParser:
 
     file_name = None
     pages = None
@@ -15,7 +15,7 @@ class PDFProcessor:
         if not file_name:
             raise ValueError("Você precisa informar um nome de arquivo!")
         self.file_name = file_name
-        self.process_PDF()
+        self.parse_PDF()
 
     def get_text_of_page(self, number):
         """ Retorna o texto da página 'number' (obs. a primeira página do PDF é zero)
@@ -23,7 +23,7 @@ class PDFProcessor:
 
         return self.pages[number].get_textpage().get_text_range().split("\r\n")
 
-    def process_PDF(self):
+    def parse_PDF(self):
         print("entrei aqui")
         logging.info(f"Processando o PDF {self.file_name}.")
         self.pages = pdfium.PdfDocument(self.file_name)
