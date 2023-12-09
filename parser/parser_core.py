@@ -1,13 +1,10 @@
 #!/usr/bin/env python3
 
-import pypdfium2 as pdfium 
+import fitz 
 import logging
-from enum import Enum
 logging.basicConfig(level=logging.DEBUG)
 
-class TipoLinha(Enum):
-    """ Enumeração dos possíveis tipos de linha, para simplificar o código """
-    LINHA_DESCRICAO = 0  # A linha é cabeçalho (só deveria acontecer)
+
 class PDFParser:
 
     file_name = None
@@ -25,14 +22,9 @@ class PDFParser:
         """ Retorna o texto da página 'number' (obs. a primeira página do PDF é zero)
             já separado em linhas. """
 
-        return self.pages[number].get_textpage().get_text_range().split("\r\n")
+        return self.pages[number].get_text().split('\n')
 
     def parse_PDF(self):
-        print("entrei aqui")
         logging.info(f"Processando o PDF {self.file_name}.")
-        self.pages = pdfium.PdfDocument(self.file_name)
-        logging.info(f"Conseguimos! Ele tem {len(self.pages)} páginas.")
-        page0 = self.get_text_of_page(0)
-        self.survey_title, self.survey_date = page0[0], page0[1]
-
-        
+        self.pages = fitz.open(self.file_name)
+        self.survey_title = self.get_text_of_page(0)[0]
