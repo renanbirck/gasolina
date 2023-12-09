@@ -2,8 +2,12 @@
 
 import pypdfium2 as pdfium 
 import logging
+from enum import Enum
 logging.basicConfig(level=logging.DEBUG)
 
+class TipoLinha(Enum):
+    """ Enumeração dos possíveis tipos de linha, para simplificar o código """
+    LINHA_DESCRICAO = 0  # A linha é cabeçalho (só deveria acontecer)
 class PDFParser:
 
     file_name = None
@@ -28,5 +32,7 @@ class PDFParser:
         logging.info(f"Processando o PDF {self.file_name}.")
         self.pages = pdfium.PdfDocument(self.file_name)
         logging.info(f"Conseguimos! Ele tem {len(self.pages)} páginas.")
-        self.survey_title = self.get_text_of_page(0)[0]
+        page0 = self.get_text_of_page(0)
+        self.survey_title, self.survey_date = page0[0], page0[1]
 
+        

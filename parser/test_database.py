@@ -30,11 +30,13 @@ class TestDatabase(unittest.TestCase):
 
     def test_adiciona_distribuidoras(self):
         test_DB = database.Database('pesquisas_test.db')
-
+        # Definir um estado 'zerado' para rodar o teste
+        
         for distribuidora in ['ALFA', 'BETA', 'GAMA']:
+            test_DB.cursor.execute("DELETE FROM Distribuidoras WHERE NomeDistribuidora=?;", (distribuidora, ))
             test_DB.cursor.execute("INSERT INTO Distribuidoras(IdDistribuidora, NomeDistribuidora) VALUES(NULL,?);", (distribuidora,))
 
-        # tem que falhar, porque é repetida
+        # tem que falhar, porque é repetida e isso viola a condição UNIQUE
 
         with self.assertRaises(sqlite3.IntegrityError) as context:
             test_DB.cursor.execute("INSERT INTO Distribuidoras(IdDistribuidora, NomeDistribuidora) VALUES(NULL,?);", ("ALFA",))

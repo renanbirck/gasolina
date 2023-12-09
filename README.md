@@ -37,7 +37,8 @@ O _back-end_ do projeto é estruturado em três módulos:
 * TODO: escrever Dockerfiles para o resto
 * TODO: configurar Actions para rodar os testes automaticamente
 * TODO: automatizar o _deploy_ 
-  
+* TODO: ver se há alguma forma mais inteligente, evitando raspagem de PDF ou ao menos tornando ela mais resistenta a mudanças no layout do PDF.
+
 ## Licença
 
 Licenciado sob a licença MIT; ver o arquivo LICENSE para mais detalhes.

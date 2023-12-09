@@ -25,7 +25,10 @@ class TestParser(unittest.TestCase):
         # Testar se a gente está na pesquisa certa. Já serve para validar
         # se o PDF foi corretamente lido.
 
+        # XXX: se um dia a pesquisa mudar a estrutura, estamos lascados
+
         self.assertEqual(parser.survey_title, "Pesquisa de Preços - Combustíveis")
+        self.assertEqual(parser.survey_date, "Realizada no dia 14 de novembro de 2023")
 
 if __name__ == '__main__':
     unittest.main()
