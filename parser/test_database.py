@@ -34,12 +34,16 @@ class TestDatabase(unittest.TestCase):
         
         for distribuidora in ['ALFA', 'BETA', 'GAMA']:
             test_DB.cursor.execute("DELETE FROM Distribuidoras WHERE NomeDistribuidora=?;", (distribuidora, ))
-            test_DB.cursor.execute("INSERT INTO Distribuidoras(IdDistribuidora, NomeDistribuidora) VALUES(NULL,?);", (distribuidora,))
+            test_DB.cursor.execute("INSERT INTO Distribuidoras(NomeDistribuidora) VALUES(?);", (distribuidora,))
 
         # tem que falhar, porque é repetida e isso viola a condição UNIQUE
 
         with self.assertRaises(sqlite3.IntegrityError) as context:
-            test_DB.cursor.execute("INSERT INTO Distribuidoras(IdDistribuidora, NomeDistribuidora) VALUES(NULL,?);", ("ALFA",))
+            test_DB.cursor.execute("INSERT INTO Distribuidoras(NomeDistribuidora) VALUES(?);", ("ALFA",))
+
+    def test_adiciona_posto(self):
+        test_DB = database.Database('pesquisas_test.db')
+        test_DB.cursor.execute("INSERT INTO PostosGasolina")
 
     def test_adiciona_postos(self):
         pass
