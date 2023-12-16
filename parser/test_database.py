@@ -8,14 +8,11 @@ from os.path import isfile
 
 class TestDatabase(unittest.TestCase):
 
-
-    def test_can_create_DB(self):
-        """ Verificar se o DB pode ser criado, começando a partir de um DB virgem. """
-
+    @classmethod
+    def setUpClass(cls):
+        """ Queremos trabalhar a partir de um banco de dados zerado, para não infleunciar os testes.
+        """
         remove('pesquisas_test.db')
-
-        test_DB = database.Database('pesquisas_test.db')
-        self.assertEqual(isfile('pesquisas_test.db'), True)
 
     def test_do_tables_exist(self):
         """ Verificar se o DB foi corretamente inicializado, isto é, 
@@ -35,6 +32,7 @@ class TestDatabase(unittest.TestCase):
         for distribuidora in ['ALFA', 'BETA', 'GAMA']:
             test_DB.cursor.execute("DELETE FROM Distribuidoras WHERE NomeDistribuidora=?;", (distribuidora, ))
             test_DB.cursor.execute("INSERT INTO Distribuidoras(NomeDistribuidora) VALUES(?);", (distribuidora,))
+            test_DB.connection.commit()
 
         # tem que falhar, porque é repetida e isso viola a condição UNIQUE
 
@@ -43,7 +41,10 @@ class TestDatabase(unittest.TestCase):
 
     def test_adiciona_posto(self):
         test_DB = database.Database('pesquisas_test.db')
-        test_DB.cursor.execute("INSERT INTO PostosGasolina")
+        test_DB.cursor.execute("INSERT INTO PostosGasolina(IdDistribuidora, NomePosto, EnderecoPosto, BairroPosto)\
+                               VALUES ((SELECT IdDistribuidora FROM Distribuidoras WHERE NomeDistribuidora LIKE ?),\
+                               ?, ?, ?)", ("ALFA", "Posto do Bozo", "Rua do Bozo, 0", "Centro"))
+        test_DB.connection.commit()
 
     def test_adiciona_postos(self):
         pass
