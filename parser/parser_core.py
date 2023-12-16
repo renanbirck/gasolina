@@ -28,3 +28,4 @@ class PDFParser:
         logging.info(f"Processando o PDF {self.file_name}.")
         self.pages = fitz.open(self.file_name)
         self.survey_title = self.get_text_of_page(0)[0]
+        self.survey_date = self.get_text_of_page(0)[1]
