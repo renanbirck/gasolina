@@ -26,8 +26,8 @@ class PDFParser:
     def parse_PDF(self):
         logging.info(f"Processando o PDF {self.file_name}.")
         document = fitz.open(self.file_name)
-        self.pages = flatten_list([page.get_text().split('\n') for page in document])
-        self.survey_title, self.survey_date = self.pages[0], self.pages[1]
+        self.content = flatten_list([page.get_text().split('\n') for page in document])
+        self.survey_title, self.survey_date = self.content[0], self.content[1]
 
 
     def try_to_find_posts(self):

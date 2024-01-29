@@ -12,7 +12,7 @@ class TestParser(unittest.TestCase):
         parser = parser_core.PDFParser(self.target)
 
         # Se tivermos conseguido ler o PDF, alguma coisa vai estar em 'pages'.
-        self.assertNotEqual(parser.pages, None)
+        self.assertNotEqual(parser.content, None)
 
 
     def test_can_get_survey_info(self):
