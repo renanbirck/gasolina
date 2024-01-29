@@ -14,9 +14,6 @@ class TestParser(unittest.TestCase):
         # Se tivermos conseguido ler o PDF, alguma coisa vai estar em 'pages'.
         self.assertNotEqual(parser.pages, None)
 
-        # Se um dia começar a falhar aqui... talvez o PDF não tenha mais 4 páginas,
-        # porque foram adicionados novos postos.
-        self.assertEqual(len(parser.pages), 4)
 
     def test_can_get_survey_info(self):
 

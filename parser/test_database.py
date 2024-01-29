@@ -46,7 +46,12 @@ class TestDatabase(unittest.TestCase):
                                ?, ?, ?)", ("ALFA", "Posto do Bozo", "Rua do Bozo, 0", "Centro"))
         test_DB.connection.commit()
 
-    def test_adiciona_postos(self):
-        pass
+    def test_adiciona_posto_repetido(self):
+        test_DB = database.Database('pesquisas_test.db')
+        with self.assertRaises(sqlite3.IntegrityError) as context:
+            test_DB.cursor.execute("INSERT INTO PostosGasolina(IdDistribuidora, NomePosto, EnderecoPosto, BairroPosto)\
+                                   VALUES ((SELECT IdDistribuidora FROM Distribuidoras WHERE NomeDistribuidora LIKE ?),\
+                                   ?, ?, ?)", ("ALFA", "Posto do Bozo", "Rua do Bozo, 0", "Centro"))
+            test_DB.connection.commit()
 
 
