@@ -29,6 +29,14 @@ class PDFParser:
         self.content = flatten_list([page.get_text().split('\n') for page in document])
         self.survey_title, self.survey_date = self.content[0], self.content[1]
 
+        self.try_to_find_posts()
 
     def try_to_find_posts(self):
+        keywords = ["Posto", "Com. Comb", "Auto"]
         """ Tentar inferir os postos de gasolina e seus endereços. """
+        for line_number, line in enumerate(self.content):
+            if any(keyword in line for keyword in keywords):
+                logging.info(f"Achei o que parece ser o nome do posto {self.number_of_posts+1}, na linha {line_number+1}: {line}.")
+                self.number_of_posts += 1
+        logging.info(f"Achei {self.number_of_posts} postos.")
+                

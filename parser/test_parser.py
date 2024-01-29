@@ -29,5 +29,9 @@ class TestParser(unittest.TestCase):
         # self.assertEqual(parser.survey_title, "Pesquisa de Preços - Combustíveis")
         self.assertEqual(parser.survey_date, "Realizada no dia 14 de novembro de 2023")
 
+    def test_get_posts(self):
+        parser = parser_core.PDFParser(self.target)
+        self.assertEqual(parser.number_of_posts, 99)
+
 if __name__ == '__main__':
     unittest.main()
