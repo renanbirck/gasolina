@@ -32,10 +32,14 @@ class PDFParser:
         self.try_to_find_posts()
 
     def try_to_find_posts(self):
-        keywords = ["Posto", "Com. Comb", "Auto"]
-        """ Tentar inferir os postos de gasolina e seus endereços. """
+        """ Tentar inferir os postos de gasolina e suas informações.
+            Numa função posterior, iremos identificar cada posto e os preços da tabela. """
+
+        name_keywords = ["Posto", "Com. Comb", "Auto"]
+        fuel_names = ["GASOLINA", "COMUM", "ADITIVADA", "DIESEL", "ETANOL", "GNV"]
+        unwanted_keywords = ["BANDEIRA", "POSTO / ENDEREÇO", "PREÇO", "R$"]
         for line_number, line in enumerate(self.content):
-            if any(keyword in line for keyword in keywords):
+            if any(name_keyword in line for name_keyword in name_keywords):
                 address = self.content[line_number + 1]
                 logging.info(f"Achei o que parece ser o nome do posto {self.number_of_posts+1}, na linha {line_number+1}: {line}.")
                 logging.info(f"O endereço desse posto é {address}.")
@@ -47,6 +51,15 @@ class PDFParser:
                 address = address.split(", ")
                 street, number, neighbourhood = address[0], address[1:-1], address[-1]
                 self.number_of_posts += 1
+            # Os nomes das distribuidoras são sempre em CAPS LOCK,
+            # então nós vamos precisar de uma lógica para filtrar palavras em CAPS LOCK
+            # que não sejam nomes de distribuidoras.
+
+            # XXX: puta que pariu, esse é o código mais HEDIONDO que eu já cometi na minha vida.
+            # Ver se tem alguma forma de limpar.
+
+            elif line.isupper() and not any(fuel_name in line for fuel_name in fuel_names) and not any(unwanted_keyword in line for unwanted_keyword in unwanted_keywords):
+                logging.info(f"Nome da distribuidora: {line}.")
                 
         logging.info(f"Achei {self.number_of_posts} postos.")
                 
