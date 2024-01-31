@@ -36,7 +36,17 @@ class PDFParser:
         """ Tentar inferir os postos de gasolina e seus endereços. """
         for line_number, line in enumerate(self.content):
             if any(keyword in line for keyword in keywords):
+                address = self.content[line_number + 1]
                 logging.info(f"Achei o que parece ser o nome do posto {self.number_of_posts+1}, na linha {line_number+1}: {line}.")
+                logging.info(f"O endereço desse posto é {address}.")
+                # Processar o endereço do posto. 
+                # se algum CORNO na prefeitura decidir que bairro pode ter vírgula no nome,
+                # eu faço questão de pegar o CORNO e apertar pelo pescoço até ele
+                # se arrepender da decisão
+                
+                address = address.split(", ")
+                street, number, neighbourhood = address[0], address[1:-1], address[-1]
                 self.number_of_posts += 1
+                
         logging.info(f"Achei {self.number_of_posts} postos.")
                 
