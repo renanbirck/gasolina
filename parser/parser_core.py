@@ -20,6 +20,8 @@ class PDFParser:
     distribuidoras = []
     database = Database()
 
+    dados_postos = {}  
+
     def __init__(self, file_name=None):
         if not file_name:
             raise ValueError("Você precisa informar um nome de arquivo!")
@@ -43,8 +45,11 @@ class PDFParser:
         palavras_chave_nome = ["Posto", "Com. Comb", "Auto"]
         combustiveis = ["GASOLINA", "COMUM", "ADITIVADA", "DIESEL", "ETANOL", "GNV"]
         ignorar_palavras = ["BANDEIRA", "POSTO / ENDEREÇO", "PREÇO", "R$"]
+        rua = None
+
         for num_linha, linha in enumerate(self.content):
             if any(name_keyword in linha for name_keyword in palavras_chave_nome):
+                nome_posto = self.content[num_linha]
                 endereco_posto = self.content[num_linha + 1]
                 logging.info(f"Achei o que parece ser o nome do posto {self.total_postos+1}, na linha {num_linha+1}: {linha}.")
                 logging.info(f"O endereço desse posto é {endereco_posto}.")
@@ -53,8 +58,8 @@ class PDFParser:
                 # eu faço questão de pegar o CORNO e apertar pelo pescoço até ele
                 # se arrepender da decisão
                 
-                endereco_posto = endereco_posto.split(", ")
-                rua, numero, bairro = endereco_posto[0], endereco_posto[1:-1], endereco_posto[-1]
+                endereco_posto = endereco_posto.strip().split(", ")
+                rua, bairro = ', '.join(endereco_posto[0:-1]), endereco_posto[-1]
                 self.total_postos += 1
 
             # Os nomes das distribuidoras são sempre em CAPS LOCK,
@@ -63,19 +68,12 @@ class PDFParser:
 
             elif linha.isupper() and not any(nome_combustivel in linha for nome_combustivel in combustiveis) \
                                 and not any(palavra_a_ignorar in linha for palavra_a_ignorar in ignorar_palavras):
-                logging.info(f"Nome da distribuidora: {linha}.")
-                self.distribuidoras.append(linha)
+                distribuidora_atual = linha
+                logging.info(f"Nome da distribuidora: {distribuidora_atual}.")
+        
+            if rua:  # Se continuar em none, sabemos que não era um posto
+                self.dados_postos[self.total_postos] = [nome_posto, rua, bairro, distribuidora_atual]
             
-
         logging.info(f"Achei {self.total_postos} postos.")
+        print(self.dados_postos)
 
-        # Não tem por que uma distribuidora se repetir.
-        self.distribuidoras = set(self.distribuidoras)
-        self.load_into_database()
-    
-    def load_into_database(self):
-            for distribuidora in self.distribuidoras:
-                try:
-                    self.database.cursor.execute("INSERT INTO Distribuidoras(NomeDistribuidora) VALUES(?)", (distribuidora, ))
-                except:
-                    logging.info(f"Nome de distribuidora repetido: {distribuidora}")
