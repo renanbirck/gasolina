@@ -12,8 +12,17 @@ class TestDatabase(unittest.TestCase):
     def setUpClass(cls):
         """ Queremos trabalhar a partir de um banco de dados zerado, para não infleunciar os testes.
         """
-        remove('pesquisas_test.db')
-
+        try:
+            remove('pesquisas_test.db')
+        except:
+            pass
+    @classmethod
+    def tearDownClass(cls):
+        try:
+            remove('pesquisas_test.db')
+        except:
+            pass
+        
     def test_do_tables_exist(self):
         """ Verificar se o DB foi corretamente inicializado, isto é, 
         se ele está persistindo (o D do ACID) a partir do teste anterior. """

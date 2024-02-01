@@ -27,11 +27,11 @@ class TestParser(unittest.TestCase):
         # XXX: desativei esse teste, porque a pymupdf tem um bug, está retornando
         # um caractere inválido. https://github.com/pymupdf/PyMuPDF/issues/2876
         # self.assertEqual(parser.survey_title, "Pesquisa de Preços - Combustíveis")
-        self.assertEqual(parser.survey_date, "Realizada no dia 14 de novembro de 2023")
+        self.assertEqual(parser.data_pesquisa, "Realizada no dia 14 de novembro de 2023")
 
     def test_get_posts(self):
         parser = parser_core.PDFParser(self.target)
-        self.assertEqual(parser.number_of_posts, 99)
+        self.assertEqual(parser.total_postos, 99)
 
 if __name__ == '__main__':
     unittest.main()

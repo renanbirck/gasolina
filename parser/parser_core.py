@@ -2,6 +2,7 @@
 
 import fitz 
 import logging
+from database import Database
 logging.basicConfig(level=logging.DEBUG)
 
 def flatten_list(xss):
@@ -13,9 +14,11 @@ class PDFParser:
 
     file_name = None
     content = None
-    survey_title = "xxx"
-    posts = []
-    number_of_posts = 0
+    titulo_pesquisa = "xxx"
+    postos = []
+    total_postos = 0
+    distribuidoras = []
+    database = Database()
 
     def __init__(self, file_name=None):
         if not file_name:
@@ -26,40 +29,53 @@ class PDFParser:
     def parse_PDF(self):
         logging.info(f"Processando o PDF {self.file_name}.")
         document = fitz.open(self.file_name)
+
         self.content = flatten_list([page.get_text().split('\n') for page in document])
-        self.survey_title, self.survey_date = self.content[0], self.content[1]
+        self.titulo_pesquisa, self.data_pesquisa = self.content[0], self.content[1]
 
         self.try_to_find_posts()
 
     def try_to_find_posts(self):
         """ Tentar inferir os postos de gasolina e suas informações.
             Numa função posterior, iremos identificar cada posto e os preços da tabela. """
-
-        name_keywords = ["Posto", "Com. Comb", "Auto"]
-        fuel_names = ["GASOLINA", "COMUM", "ADITIVADA", "DIESEL", "ETANOL", "GNV"]
-        unwanted_keywords = ["BANDEIRA", "POSTO / ENDEREÇO", "PREÇO", "R$"]
-        for line_number, line in enumerate(self.content):
-            if any(name_keyword in line for name_keyword in name_keywords):
-                address = self.content[line_number + 1]
-                logging.info(f"Achei o que parece ser o nome do posto {self.number_of_posts+1}, na linha {line_number+1}: {line}.")
-                logging.info(f"O endereço desse posto é {address}.")
+        
+        # TODO: ver se é possível simplificar essa lógica
+        palavras_chave_nome = ["Posto", "Com. Comb", "Auto"]
+        combustiveis = ["GASOLINA", "COMUM", "ADITIVADA", "DIESEL", "ETANOL", "GNV"]
+        ignorar_palavras = ["BANDEIRA", "POSTO / ENDEREÇO", "PREÇO", "R$"]
+        for num_linha, linha in enumerate(self.content):
+            if any(name_keyword in linha for name_keyword in palavras_chave_nome):
+                endereco_posto = self.content[num_linha + 1]
+                logging.info(f"Achei o que parece ser o nome do posto {self.total_postos+1}, na linha {num_linha+1}: {linha}.")
+                logging.info(f"O endereço desse posto é {endereco_posto}.")
                 # Processar o endereço do posto. 
                 # se algum CORNO na prefeitura decidir que bairro pode ter vírgula no nome,
                 # eu faço questão de pegar o CORNO e apertar pelo pescoço até ele
                 # se arrepender da decisão
                 
-                address = address.split(", ")
-                street, number, neighbourhood = address[0], address[1:-1], address[-1]
-                self.number_of_posts += 1
+                endereco_posto = endereco_posto.split(", ")
+                rua, numero, bairro = endereco_posto[0], endereco_posto[1:-1], endereco_posto[-1]
+                self.total_postos += 1
+
             # Os nomes das distribuidoras são sempre em CAPS LOCK,
             # então nós vamos precisar de uma lógica para filtrar palavras em CAPS LOCK
             # que não sejam nomes de distribuidoras.
 
-            # XXX: puta que pariu, esse é o código mais HEDIONDO que eu já cometi na minha vida.
-            # Ver se tem alguma forma de limpar.
+            elif linha.isupper() and not any(nome_combustivel in linha for nome_combustivel in combustiveis) \
+                                and not any(palavra_a_ignorar in linha for palavra_a_ignorar in ignorar_palavras):
+                logging.info(f"Nome da distribuidora: {linha}.")
+                self.distribuidoras.append(linha)
+            
 
-            elif line.isupper() and not any(fuel_name in line for fuel_name in fuel_names) and not any(unwanted_keyword in line for unwanted_keyword in unwanted_keywords):
-                logging.info(f"Nome da distribuidora: {line}.")
-                
-        logging.info(f"Achei {self.number_of_posts} postos.")
-                
+        logging.info(f"Achei {self.total_postos} postos.")
+
+        # Não tem por que uma distribuidora se repetir.
+        self.distribuidoras = set(self.distribuidoras)
+        self.load_into_database()
+    
+    def load_into_database(self):
+            for distribuidora in self.distribuidoras:
+                try:
+                    self.database.cursor.execute("INSERT INTO Distribuidoras(NomeDistribuidora) VALUES(?)", (distribuidora, ))
+                except:
+                    logging.info(f"Nome de distribuidora repetido: {distribuidora}")
