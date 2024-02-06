@@ -26,8 +26,9 @@ def separa_partes(linha):
 
     posto["distribuidora"] = linha[2]
 
-    posto["comum"], posto["aditivada"], posto["diesel"], posto["etanol"], posto["gnv"] = [(float(preco) if '-' not in preco else None) for preco in linha[3:]] 
-
+    campos = ["comum", "aditivada", "diesel", "etanol", "gnv"]
+    posto.update(zip(campos, [(float(preco) if '-' not in preco else None) for preco in linha[3:]]))
+    
     return posto 
                 
 class PDFParser:
