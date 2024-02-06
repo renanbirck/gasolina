@@ -14,7 +14,7 @@ class PDFParser:
 
     file_name = None
     document = None
-    content = None
+    
     data_pesquisa = None
     extracted = []
 
@@ -46,7 +46,6 @@ class PDFParser:
 
         logging.info(f"Achei {len(self.extracted)} linhas.")
         self.pretty_print_table(self.extracted)
-
 
     def pretty_print_table(self, table):
         for line, text in enumerate(table):
