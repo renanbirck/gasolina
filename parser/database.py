@@ -13,7 +13,10 @@ class Database:
         self.initialize_DB()
 
     def __del__(self):
+        
         self.connection.commit()
+        logging.info(f"Gravei {self.connection.total_changes} entradas.")
+        self.connection.close()
 
     def initialize_DB(self):
         logging.info(f"Criando o BD com o nome {self.file_name}.")
@@ -56,8 +59,6 @@ class Database:
                                 FOREIGN KEY (IdPosto)\
                                     REFERENCES Posto(IdPosto)\
                                     ON DELETE RESTRICT);")
-
-
         self.connection.commit()
 
     

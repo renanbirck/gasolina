@@ -6,7 +6,4 @@ from parser_core import PDFParser
 
 nome_arquivo = argv[1]
 
-try:
-    parser = PDFParser(nome_arquivo)
-except:
-    print(f"Epa! Não consegui ler o arquivo {nome_arquivo}!")
+parser = PDFParser(nome_arquivo)
