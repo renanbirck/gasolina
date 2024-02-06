@@ -90,5 +90,3 @@ class PDFParser:
 
         # Depois, adicionar os postos. Isso parte da premissa que um posto
         # nunca vai mudar de bandeira (acredito que isso seja raro o suficiente).
-                
-        

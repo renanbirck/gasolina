@@ -26,6 +26,8 @@ class Database:
                              IdDistribuidora INTEGER PRIMARY KEY NOT NULL,\
                              NomeDistribuidora VARCHAR(24) UNIQUE NOT NULL\
                             );")
+    
+        # Dois postos podem ter o mesmo nome, mas dois postos não podem ter o mesmo endereço.
         self.cursor.execute("CREATE TABLE IF NOT EXISTS PostosGasolina(\
                                 IdPosto INTEGER PRIMARY KEY NOT NULL,\
                                 IdDistribuidora INTEGER NOT NULL,\
