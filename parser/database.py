@@ -15,7 +15,6 @@ class Database:
     def __del__(self):
         
         self.connection.commit()
-        logging.info(f"Gravei {self.connection.total_changes} entradas.")
         self.connection.close()
 
     def initialize_DB(self):

@@ -33,7 +33,7 @@ class PDFParser:
         self.extract_tables()
         self.data_pesquisa = self.extracted[1][1]
 
-        self.try_to_find_posts()
+        self.procura_postos()
 
     def extract_tables(self):
         for page in self.document: 
@@ -45,16 +45,23 @@ class PDFParser:
             self.extracted.extend(tab_contents)
 
         logging.info(f"Achei {len(self.extracted)} linhas.")
-        self.pretty_print_table(self.extracted)
+        #self.pretty_print_table(self.extracted)
 
     def pretty_print_table(self, table):
         for line, text in enumerate(table):
             print(f"Linha {line}: {text}")
 
-    def try_to_find_posts(self):
+    def procura_postos(self):
         """ Usa as funções da pymupdf para identificar a tabela onde estão as informações dos postos. 
             Muito mais elegante do que tentar fazer na mão. """
+        # Todos os postos começam com um número, então, 
+        # se a gente conseguir converter para inteiro, estamos no caminho certo.
+
+        for line, content in enumerate(self.extracted):
+            try:
+                id_posto = int(content[0])
+                logging.info(f"Encontrei um posto! {content}")
+            except(ValueError):
+                logging.info(f"A linha {content} não me parece um posto.")
         
-        
-        
-            
+                
