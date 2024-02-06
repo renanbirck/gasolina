@@ -12,6 +12,22 @@ def flatten_list(xss):
 
 def separa_partes(linha):
     posto = {}
+    posto["id"] = int(linha[0])
+    
+    # "Posto XPTO\nR. XYZ, 139, Bairro" -> ["Posto XPTO", "R. XYZ, 139", "Bairro"]
+
+    partes_endereco = linha[1].split('\n')
+    print(partes_endereco)
+    posto["nome"] = partes_endereco[0]
+
+    endereco_bairro = partes_endereco[1:][0].split(",")
+    posto["endereço"] = ','.join(endereco_bairro[:-1])
+    posto["bairro"] = endereco_bairro[-1].strip()
+
+    posto["distribuidora"] = linha[2]
+
+    posto["comum"], posto["aditivada"], posto["diesel"], posto["etanol"], posto["gnv"] = [float(preco) for preco in linha[3:]]
+    
     return posto 
                 
 class PDFParser:
