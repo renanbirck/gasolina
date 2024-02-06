@@ -12,12 +12,14 @@ def flatten_list(xss):
 
 def separa_partes(linha):
     posto = {}
-    posto["id"] = int(linha[0])
+    try:
+        posto["id"] = int(linha[0])
+    except:
+        raise ValueError("A linha não tem um ID válido!")
     
     # "Posto XPTO\nR. XYZ, 139, Bairro" -> ["Posto XPTO", "R. XYZ, 139", "Bairro"]
 
     partes_endereco = linha[1].split('\n')
-    print(partes_endereco)
     posto["nome"] = partes_endereco[0]
 
     endereco_bairro = partes_endereco[1:][0].split(",")
@@ -27,7 +29,7 @@ def separa_partes(linha):
     posto["distribuidora"] = linha[2]
 
     campos = ["comum", "aditivada", "diesel", "etanol", "gnv"]
-    posto.update(zip(campos, [(float(preco) if '-' not in preco else None) for preco in linha[3:]]))
+    posto.update(zip(campos, [(float(preco.replace(',','.')) if '-' not in preco else None) for preco in linha[3:]]))
     
     return posto 
                 
@@ -40,6 +42,8 @@ class PDFParser:
     extracted = []
 
     database = Database()
+
+    postos = []
 
     def __init__(self, file_name=None):
         if not file_name:
@@ -79,9 +83,8 @@ class PDFParser:
         # se a gente conseguir converter para inteiro, estamos no caminho certo.
 
         for line, content in enumerate(self.extracted):
-            try:
-                id_posto = int(content[0])
-                logging.info(f"Encontrei um posto! {content}")
-            except(ValueError):
-                logging.info(f"A linha {content} não me parece um posto.")
-    
+           try:
+            posto = separa_partes(content)
+            logging.info(f"Achei um posto: {posto}")
+           except:
+            logging.info(f"Não parece um posto: {content}")
