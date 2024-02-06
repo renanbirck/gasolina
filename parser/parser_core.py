@@ -10,6 +10,10 @@ def flatten_list(xss):
         Simplifica a lógica do código. """
     return [x for xs in xss for x in xs]
 
+def separa_partes(linha):
+    posto = {}
+    return posto 
+                
 class PDFParser:
 
     file_name = None
@@ -63,5 +67,4 @@ class PDFParser:
                 logging.info(f"Encontrei um posto! {content}")
             except(ValueError):
                 logging.info(f"A linha {content} não me parece um posto.")
-        
-                
+    
