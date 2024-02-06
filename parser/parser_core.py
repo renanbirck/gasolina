@@ -36,6 +36,7 @@ class PDFParser:
         self.titulo_pesquisa, self.data_pesquisa = self.content[0], self.content[1]
 
         self.try_to_find_posts()
+        self.load_into_table()
 
     def try_to_find_posts(self):
         """ Tentar inferir os postos de gasolina e suas informações.
@@ -48,7 +49,7 @@ class PDFParser:
         rua = None
 
         for num_linha, linha in enumerate(self.content):
-            if any(name_keyword in linha for name_keyword in palavras_chave_nome):
+            if any(palavra_chave in linha for palavra_chave in palavras_chave_nome):
                 nome_posto = self.content[num_linha]
                 endereco_posto = self.content[num_linha + 1]
                 logging.info(f"Achei o que parece ser o nome do posto {self.total_postos+1}, na linha {num_linha+1}: {linha}.")
@@ -77,3 +78,17 @@ class PDFParser:
         logging.info(f"Achei {self.total_postos} postos.")
         print(self.dados_postos)
 
+    def load_into_table(self):
+        # Primeiro, alimentar a tabela com as bandeiras.
+
+        distribuidoras = [posto[-1] for posto in self.dados_postos.values()]
+        for distribuidora in distribuidoras:
+            try:
+                self.database.cursor.execute("INSERT INTO Distribuidoras(NomeDistribuidora) VALUES (?)", distribuidora)
+            except: # Falhou a restrição UNIQUE (não tem nada de errado nisso)
+                logging.info(f"Opa, a distribuidora {distribuidora} já existe (não tem nada de errado nisso).")
+
+        # Depois, adicionar os postos. Isso parte da premissa que um posto
+        # nunca vai mudar de bandeira (acredito que isso seja raro o suficiente).
+                
+        
