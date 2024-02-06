@@ -43,6 +43,13 @@ class TestParser(unittest.TestCase):
         self.assertEqual(partes["etanol"], 103)
         self.assertEqual(partes["gnv"], 104)
 
+        # Tratar o caso do posto não vender um dos combustíveis
+
+    def test_nao_vende_GNV(self):
+        linha = ['69420', 'Posto Hipotético\nR. XYZ, 1399, Bairro', 'ALFA', '100', '101', '102', '103', '-']
+        partes = parser_core.separa_partes(linha)
+        self.assertEqual(partes["gnv"], None)
+
     def test_get_posts(self):
         parser = parser_core.PDFParser(self.target)
         self.assertEqual(parser.total_postos, 99)
