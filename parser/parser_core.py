@@ -10,6 +10,10 @@ def flatten_list(xss):
         Simplifica a lógica do código. """
     return [x for xs in xss for x in xs]
 
+def pretty_print_table(table):
+    for line, text in enumerate(table):
+        print(f"Linha {line}: {text}")
+
 def separa_partes(linha):
     posto = {}
     try:
@@ -44,7 +48,7 @@ class PDFParser:
     database = Database()
 
     postos = []
-
+  
     def __init__(self, file_name=None):
         if not file_name:
             raise ValueError("Você precisa informar um nome de arquivo!")
@@ -70,21 +74,23 @@ class PDFParser:
             self.extracted.extend(tab_contents)
 
         logging.info(f"Achei {len(self.extracted)} linhas.")
-        #self.pretty_print_table(self.extracted)
-
-    def pretty_print_table(self, table):
-        for line, text in enumerate(table):
-            print(f"Linha {line}: {text}")
 
     def procura_postos(self):
         """ Usa as funções da pymupdf para identificar a tabela onde estão as informações dos postos. 
             Muito mais elegante do que tentar fazer na mão. """
         # Todos os postos começam com um número, então, 
         # se a gente conseguir converter para inteiro, estamos no caminho certo.
+        self.postos = []
 
         for line, content in enumerate(self.extracted):
            try:
             posto = separa_partes(content)
             logging.info(f"Achei um posto: {posto}")
+            self.postos.append(posto)
            except:
             logging.info(f"Não parece um posto: {content}")
+        
+        self.total_postos = max([x["id"] for x in self.postos])
+
+        pretty_print_table(self.postos)
+        

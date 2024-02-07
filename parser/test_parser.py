@@ -8,14 +8,7 @@ class TestParser(unittest.TestCase):
 
     target = 'references/Novembro-2023.pdf'
 
-    def test_can_get_PDF(self):
-        parser = parser_core.PDFParser(self.target)
-        # Se tivermos conseguido ler o PDF, alguma coisa vai estar em 'pages'.
-        self.assertNotEqual(parser.document, None)
-
-
     def test_can_get_survey_info(self):
-
         parser = parser_core.PDFParser(self.target)
        
         # Testar se a gente está na pesquisa certa. Já serve para validar
