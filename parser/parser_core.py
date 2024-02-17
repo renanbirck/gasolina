@@ -97,6 +97,9 @@ class PDFParser:
         self.carrega_no_DB()
 
     def carrega_no_DB(self):
+        """ Carrega as informações que lemos anteriormente. """
+        # TODO: colocar tudo na mesma etapa, para ganharmos tempo e simplificarmos o código.
+
         logging.info(f"Primeira passagem: carregando as distribuidoras...")
         for posto in self.postos:
             try:
@@ -106,3 +109,12 @@ class PDFParser:
 
         self.database.cursor.execute("SELECT COUNT(IdDistribuidora) FROM Distribuidoras")
         logging.info(f"Cadastrei {self.database.cursor.fetchone()[0]} distribuidoras.")
+
+        logging.info(f"Segunda passagem: carregando os postos...")
+        for posto in self.postos:
+            logging.info(f"Posto {posto["id"]} de {self.total_postos}: {posto["nome"]}...")
+            self.database.cursor.execute("INSERT INTO PostosGasolina(IdDistribuidora, NomePosto, EnderecoPosto, BairroPosto) \
+                                          VALUES((SELECT IdDistribuidora FROM Distribuidoras WHERE NomeDistribuidora=(?)), ?, ?, ?)",
+                                          (posto["distribuidora"], posto["nome"], posto["endereço"], posto["bairro"],))
+        self.database.cursor.execute("SELECT COUNT(IdPosto) FROM PostosGasolina")
+        logging.info(f"Cadastrei {self.database.cursor.fetchone()[0]} postos.")
