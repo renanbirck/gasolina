@@ -29,12 +29,13 @@ class Database:
                              NomeDistribuidora VARCHAR(24) UNIQUE NOT NULL\
                             );")
     
-        # Dois postos podem ter o mesmo nome, mas dois postos não podem ter o mesmo endereço.
+        # Dois postos podem ter o mesmo nome, e pode ocorrer de terem o mesmo endereço
+        # SE eles estiverem em lados opostos de uma estrada.
         self.cursor.execute("CREATE TABLE IF NOT EXISTS PostosGasolina(\
                                 IdPosto INTEGER PRIMARY KEY NOT NULL,\
                                 IdDistribuidora INTEGER NOT NULL,\
                                 NomePosto VARCHAR(255) NOT NULL,\
-                                EnderecoPosto VARCHAR(255) UNIQUE NOT NULL,\
+                                EnderecoPosto VARCHAR(255) NOT NULL,\
                                 BairroPosto VARCHAR(32) NOT NULL,\
                                 FOREIGN KEY (IdDistribuidora)\
                                     REFERENCES Distribuidoras(IdDistribuidora)\
