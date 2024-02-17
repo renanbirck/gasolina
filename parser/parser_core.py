@@ -82,15 +82,27 @@ class PDFParser:
         # se a gente conseguir converter para inteiro, estamos no caminho certo.
         self.postos = []
 
-        for line, content in enumerate(self.extracted):
+        for _, content in enumerate(self.extracted):
            try:
             posto = separa_partes(content)
             logging.info(f"Achei um posto: {posto}")
             self.postos.append(posto)
            except:
             logging.info(f"Não parece um posto: {content}")
-        
+
         self.total_postos = max([x["id"] for x in self.postos])
 
         pretty_print_table(self.postos)
-        
+
+        self.carrega_no_DB()
+
+    def carrega_no_DB(self):
+        logging.info(f"Primeira passagem: carregando as distribuidoras...")
+        for posto in self.postos:
+            try:
+                self.database.cursor.execute("INSERT INTO Distribuidoras(NomeDistribuidora) VALUES(?)", (posto["distribuidora"],))
+            except: # Se cair aqui, é porque UNIQUE falhou. Não é um erro.
+                logging.warning(f"A distribuidora {posto["distribuidora"]} já existe (não tem nada de errado nisso).")
+
+        self.database.cursor.execute("SELECT COUNT(IdDistribuidora) FROM Distribuidoras")
+        logging.info(f"Cadastrei {self.database.cursor.fetchone()[0]} distribuidoras.")

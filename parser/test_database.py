@@ -48,6 +48,12 @@ class TestDatabase(unittest.TestCase):
         with self.assertRaises(sqlite3.IntegrityError) as context:
             test_DB.cursor.execute("INSERT INTO Distribuidoras(NomeDistribuidora) VALUES(?);", ("ALFA",))
 
+    def test_quantidade_distribuidoras(self):
+        test_DB = database.Database('pesquisas_test.db')
+        test_DB.cursor.execute("SELECT COUNT(IdDistribuidora) from Distribuidoras;")
+        output = test_DB.cursor.fetchone()
+        self.assertEqual(output[0], 3)
+
     def test_adiciona_posto(self):
         test_DB = database.Database('pesquisas_test.db')
         test_DB.cursor.execute("INSERT INTO PostosGasolina(IdDistribuidora, NomePosto, EnderecoPosto, BairroPosto)\
