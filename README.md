@@ -19,11 +19,11 @@ O _back-end_ do projeto é estruturado em três módulos:
 	* requests;
 	* BeautifulSoup.
 * Para o parser:
-	* [pypdfium2](https://github.com/pypdfium2-team/pypdfium2) (foi o que funcionou melhor **para este layout de PDF** nos meus testes);
+	* [pymupdf](https://github.com/pymupdf/PyMuPDF/issues/) (foi o que funcionou melhor **para este layout de PDF** nos meus testes);
 	* TODO: continuar a parte de processamento do PDF
-* TODO: estruturar o DB, escrever as _queries_ SQL, ver o uso de um ORM etc...
-* TODO: definir como será feita a API
-* TODO: definir como será feito o front-end
+* TODO: ver o uso de um ORM, substituindo o uso de SQL puro.
+* TODO: definir como será feita a API.
+* TODO: definir como será feito o front-end.
 
 ## Execução
 
@@ -32,6 +32,9 @@ O _back-end_ do projeto é estruturado em três módulos:
 		`podman build -t docker-scraper -f scraper/Dockerfile .`
 	* Como o _scraper_ escreve para um diretório, é preciso executar o _container_ indicando onde gravar os dados.
 		`podman run -d -v [local onde gravar os dados]:/app/data docker-scraper:latest`
+
+* Para rodar o _parser_:
+	* No diretório `parser`, rodar o _script_ `run_parser.sh`, fornecendo um arquivo adequado como parâmetro.
 
 * TODO: integrar os testes com o _container_.
 * TODO: escrever Dockerfiles para o resto
