@@ -7,6 +7,7 @@ WORKDIR /app
 RUN cd /app 
 
 # Copiar nossos arquivos 
+COPY scraper/*.sh .
 COPY scraper/*.py  .    
 COPY ../requirements.txt . 
 
@@ -20,4 +21,4 @@ RUN ls -la
 # Rodar a aplicação. A aplicação escreve no diretório 'data',
 # então na hora de rodar o container precisa informar
 # podman run -d -v [ONDE ARMAZENAR OS DADOS NO HOST]:/app/data docker-scraper:latest
-CMD ["python", "scraper.py"]
+CMD ["bash", "run_scraper.sh", "2022", "2024"]
