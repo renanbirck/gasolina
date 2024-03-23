@@ -2,7 +2,6 @@ import unittest, sys
 sys.path.append('..')
 
 import parser_core
-import datetime
 
 class TestParser(unittest.TestCase):
 
@@ -60,5 +59,8 @@ class TestParser(unittest.TestCase):
         data = "31 de Outubro de 2024"
         self.assertEqual(parser_core.mini_date_parser(data), "31/10/2024")
 
+        data = "Realizada no dia 31 de Dezembro de 2023"
+        self.assertEqual(parser_core.mini_date_parser(data), "31/12/2023")
+        
 if __name__ == '__main__':
     unittest.main()

@@ -24,7 +24,10 @@ def mini_date_parser(date):
 
     string_date = date.lower()
 
-    dia, _, mes, _, ano = string_date.split(' ')
+    parts = string_date.split(' ')
+    
+    dia, _, mes, _, ano = parts[-5:]
+    
     numero_mes = meses.index(mes)
 
     return f"{dia}/{('0' if numero_mes < 10 else '') + str(numero_mes)}/{ano}"
