@@ -14,6 +14,21 @@ def pretty_print_table(table):
     for line, text in enumerate(table):
         print(f"Linha {line}: {text}")
 
+def mini_date_parser(date):
+    # Um mini-parser para transformar datas do tipo 'XX de YY de ZZZZ' em 'XX/YY/ZZZZ'.
+    # Intencionalmente não faz nenhuma verificação de erro, ou seja, se o usuário
+    # especificar '32 de fevereiro de 3.1415', ele vai ter '32/02/3.1415'.
+
+    meses = [None, "janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", 
+                   "agosto", "setembro", "outubro", "novembro", "dezembro"]
+
+    string_date = date.lower()
+
+    dia, _, mes, _, ano = string_date.split(' ')
+    numero_mes = meses.index(mes)
+
+    return f"{dia}/{('0' if numero_mes < 10 else '') + str(numero_mes)}/{ano}"
+
 def separa_partes(linha):
     posto = {}
     try:
@@ -100,21 +115,23 @@ class PDFParser:
         """ Carrega as informações que lemos anteriormente. """
         # TODO: colocar tudo na mesma etapa, para ganharmos tempo e simplificarmos o código.
 
+        self.database.cursor.execute("INSERT INTO Pesquisas(DataPesquisa) VALUES (?)", (self.data_pesquisa,))
         logging.info(f"Primeira passagem: carregando as distribuidoras...")
         for posto in self.postos:
             try:
                 self.database.cursor.execute("INSERT INTO Distribuidoras(NomeDistribuidora) VALUES(?)", (posto["distribuidora"],))
             except: # Se cair aqui, é porque UNIQUE falhou. Não é um erro.
-                logging.warning(f"A distribuidora {posto["distribuidora"]} já existe (não tem nada de errado nisso).")
+                logging.warning(f"A distribuidora {posto['distribuidora']} já existe (não tem nada de errado nisso).")
 
         self.database.cursor.execute("SELECT COUNT(IdDistribuidora) FROM Distribuidoras")
         logging.info(f"Cadastrei {self.database.cursor.fetchone()[0]} distribuidoras.")
 
         logging.info(f"Segunda passagem: carregando os postos...")
         for posto in self.postos:
-            logging.info(f"Posto {posto["id"]} de {self.total_postos}: {posto["nome"]}...")
+            logging.info(f"Posto {posto['id']} de {self.total_postos}: {posto['nome']}...")
             self.database.cursor.execute("INSERT INTO PostosGasolina(IdDistribuidora, NomePosto, EnderecoPosto, BairroPosto) \
                                           VALUES((SELECT IdDistribuidora FROM Distribuidoras WHERE NomeDistribuidora=(?)), ?, ?, ?)",
                                           (posto["distribuidora"], posto["nome"], posto["endereço"], posto["bairro"],))
         self.database.cursor.execute("SELECT COUNT(IdPosto) FROM PostosGasolina")
         logging.info(f"Cadastrei {self.database.cursor.fetchone()[0]} postos.")
+

@@ -47,6 +47,18 @@ class TestParser(unittest.TestCase):
         parser = parser_core.PDFParser(self.target)
         self.assertEqual(parser.total_postos, 99)
 
+    def test_mini_date_parser(self):
+        # para não termos que arrastar uma biblioteca inteira para cá, vamos
+        # escrever um "mini parser" para datas, que receba 
+        # 'dia do mês de ano' e entregue 'dia/mês/ano'
+
+        # O None é para podermos usar o número do mês como índice.
+        
+        data = "31 de Janeiro de 2024"
+        self.assertEqual(parser_core.mini_date_parser(data), "31/01/2024")
+
+        data = "31 de Outubro de 2024"
+        self.assertEqual(parser_core.mini_date_parser(data), "31/10/2024")
 
 if __name__ == '__main__':
     unittest.main()
