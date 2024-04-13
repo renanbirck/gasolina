@@ -35,8 +35,26 @@ class TestParser(unittest.TestCase):
         self.assertEqual(partes["etanol"], 103)
         self.assertEqual(partes["gnv"], 104)
 
-        # Tratar o caso do posto não vender um dos combustíveis
+    # Eu realmente gostaria de pegar a pessoa na prefeitura que gera essa planilha
+    # e ter um papo sério com ela. Graças a ela, eu estou tendo que tratar um monte
+    # de exceções.
 
+    def test_nao_tem_bairro(self):
+        linha = ['69420', 'Posto XPTO\nR. XYZ, 1234', 'ALFA', '100', '101', '102', '103', '104']
+        partes = parser_core.separa_partes(linha)
+        self.assertEqual(partes["id"], 69420)
+        self.assertEqual(partes["nome"], "Posto XPTO")
+        self.assertEqual(partes["endereço"], "R. XYZ, 1234")
+        self.assertEqual(partes["bairro"], None)
+        self.assertEqual(partes["distribuidora"], "ALFA")
+        self.assertEqual(partes["comum"], 100)
+        self.assertEqual(partes["aditivada"], 101)
+        self.assertEqual(partes["diesel"], 102)
+        self.assertEqual(partes["etanol"], 103)
+        self.assertEqual(partes["gnv"], 104)
+
+
+    # Tratar o caso do posto não vender um dos combustíveis
     def test_nao_vende_GNV(self):
         linha = ['69420', 'Posto Hipotético\nR. XYZ, 1399, Bairro', 'ALFA', '100', '101', '102', '103', '-']
         partes = parser_core.separa_partes(linha)

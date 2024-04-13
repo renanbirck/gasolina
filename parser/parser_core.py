@@ -5,11 +5,6 @@ import logging
 from database import Database
 logging.basicConfig(level=logging.DEBUG)
 
-def flatten_list(xss):
-    """ "achata" uma lista, isto é, [[1,2,3], [4,5,6]] vira [1,2,3,4,5,6]. 
-        Simplifica a lógica do código. """
-    return [x for xs in xss for x in xs]
-
 def pretty_print_table(table):
     for line, text in enumerate(table):
         print(f"Linha {line}: {text}")
@@ -33,18 +28,22 @@ def mini_date_parser(date):
     return f"{dia}/{('0' if numero_mes < 10 else '') + str(numero_mes)}/{ano}"
 
 def separa_partes(linha):
+    print(f">>> {linha}")
+
     posto = {}
     try:
         posto["id"] = int(linha[0])
     except:
         raise ValueError("A linha não tem um ID válido!")
-    
+
     # "Posto XPTO\nR. XYZ, 139, Bairro" -> ["Posto XPTO", "R. XYZ, 139", "Bairro"]
+    # "Posto XPTO\nR. XYZ, 139" -> ["Posto XPTO", "R. XYZ, 139", None]
 
     partes_endereco = linha[1].split('\n')
     posto["nome"] = partes_endereco[0]
 
     endereco_bairro = partes_endereco[1:][0].split(",")
+
     posto["endereço"] = ','.join(endereco_bairro[:-1])
     posto["bairro"] = endereco_bairro[-1].strip()
 
@@ -52,7 +51,18 @@ def separa_partes(linha):
 
     campos = ["comum", "aditivada", "diesel", "etanol", "gnv"]
     posto.update(zip(campos, [(float(preco.replace(',','.')) if '-' not in preco else None) for preco in linha[3:]]))
-    
+   
+    # XXX: Gambiarra para desfazer quando a prefeitura não colocou bairro.
+
+    try:
+        temp_numero = int(posto["bairro"])
+        print(f"??? O posto {posto["id"]} tem número no lugar do bairro? Vamos fazer uma adaptação.")
+        posto["bairro"] = None
+        posto["endereço"] = posto["endereço"] + ', ' + str(temp_numero)
+
+    except: # int não deu certo, ou seja, não tem número no lugar do bairro
+        pass
+
     return posto 
                 
 class PDFParser:
