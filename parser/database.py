@@ -36,7 +36,7 @@ class Database:
                                 IdDistribuidora INTEGER NOT NULL,\
                                 NomePosto VARCHAR(255) NOT NULL,\
                                 EnderecoPosto VARCHAR(255) NOT NULL,\
-                                BairroPosto VARCHAR(32) NOT NULL,\
+                                BairroPosto VARCHAR(32),\
                                 FOREIGN KEY (IdDistribuidora)\
                                     REFERENCES Distribuidoras(IdDistribuidora)\
                                     ON DELETE RESTRICT\
