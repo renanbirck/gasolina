@@ -128,7 +128,8 @@ class PDFParser:
         """ Carrega as informações que lemos anteriormente. """
         # TODO: colocar tudo na mesma etapa, para ganharmos tempo e simplificarmos o código.
 
-        self.database.cursor.execute("INSERT INTO Pesquisas(DataPesquisa) VALUES (?)", (self.data_pesquisa,))
+        data_pesquisa = mini_date_parser(self.data_pesquisa)
+        self.database.cursor.execute("INSERT INTO Pesquisas(DataPesquisa) VALUES (?)", (data_pesquisa,))
         logging.info(f"Primeira passagem: carregando as distribuidoras...")
         for posto in self.postos:
             try:
