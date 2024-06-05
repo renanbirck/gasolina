@@ -149,3 +149,4 @@ class PDFParser:
         self.database.cursor.execute("SELECT COUNT(IdPosto) FROM PostosGasolina")
         logging.info(f"Cadastrei {self.database.cursor.fetchone()[0]} postos.")
 
+        # Adicionar as pesquisas

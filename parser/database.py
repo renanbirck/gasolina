@@ -43,7 +43,7 @@ class Database:
                              );")
         self.cursor.execute("CREATE TABLE IF NOT EXISTS Pesquisas(\
                                 IdPesquisa INTEGER PRIMARY KEY NOT NULL,\
-                                DataPesquisa VARCHAR(24) NOT NULL);")
+                                DataPesquisa VARCHAR(24) UNIQUE NOT NULL);")
         self.cursor.execute("CREATE TABLE IF NOT EXISTS Precos(\
                                 IdPreco INTEGER PRIMARY KEY NOT NULL,\
                                 IdPesquisa INTEGER,\
