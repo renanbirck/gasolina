@@ -35,7 +35,8 @@ O _back-end_ do projeto é estruturado em três módulos:
 
 * Para rodar o _parser_:
 	* No diretório `parser`, rodar o _script_ `run_parser.sh`, fornecendo um arquivo adequado como parâmetro.
-
+	* Como a estrutura do PDF em anos anteriores era diferente, com mais ou menos postos fora de ordem, eu fiz um pouco de _data wrangling_ neles e já forneci um CSV pronto. Os resultados estão em `parser/previous_data` e podem ser importados para o BD rodando-se o script `load_previous_years.py`. (bem, serviu como introdução ao mundo real e seus dados caóticos). Os postos que já não existem mais tem ID começando em 1000.
+	
 * TODO: integrar os testes com o _container_.
 * TODO: escrever Dockerfiles para o resto
 * TODO: configurar Actions para rodar os testes automaticamente
