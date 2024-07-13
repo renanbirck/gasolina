@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from sqlite3 import IntegrityError
 import fitz 
 import logging
 from database import Database
@@ -129,7 +130,13 @@ class PDFParser:
         # TODO: colocar tudo na mesma etapa, para ganharmos tempo e simplificarmos o código.
 
         data_pesquisa = mini_date_parser(self.data_pesquisa)
-        self.database.cursor.execute("INSERT INTO Pesquisas(DataPesquisa) VALUES (?)", (data_pesquisa,))
+
+        try:
+            self.database.cursor.execute("INSERT INTO Pesquisas(DataPesquisa) VALUES (?)", (data_pesquisa,))
+        except:
+            logging.error(f"A pesquisa de {data_pesquisa} já existe. Nada para fazer!")
+            return 
+
         logging.info(f"Primeira passagem: carregando as distribuidoras...")
         for posto in self.postos:
             try:
@@ -143,9 +150,12 @@ class PDFParser:
         logging.info(f"Segunda passagem: carregando os postos...")
         for posto in self.postos:
             logging.info(f"Posto {posto['id']} de {self.total_postos}: {posto['nome']}...")
-            self.database.cursor.execute("INSERT INTO PostosGasolina(IdDistribuidora, NomePosto, EnderecoPosto, BairroPosto) \
-                                          VALUES((SELECT IdDistribuidora FROM Distribuidoras WHERE NomeDistribuidora=(?)), ?, ?, ?)",
-                                          (posto["distribuidora"], posto["nome"], posto["endereço"], posto["bairro"],))
+            try:
+                self.database.cursor.execute("INSERT INTO PostosGasolina(IdPosto, IdDistribuidora, NomePosto, EnderecoPosto, BairroPosto) \
+                                              VALUES(?,(SELECT IdDistribuidora FROM Distribuidoras WHERE NomeDistribuidora=(?)), ?, ?, ?)",
+                                              (posto["id"], posto["distribuidora"], posto["nome"], posto["endereço"], posto["bairro"],))
+            except:
+                logging.warning(f"O posto {posto['id'], posto["nome"]} já está cadastrado (não tem nada de errado nisso, mas é bom revisar a tabela depois)")
         self.database.cursor.execute("SELECT COUNT(IdPosto) FROM PostosGasolina")
         logging.info(f"Cadastrei {self.database.cursor.fetchone()[0]} postos.")
 

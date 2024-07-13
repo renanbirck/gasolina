@@ -2,7 +2,7 @@
 
 ## Introdução
 
-O PROCON de Joinville/SC, disponibiliza, por meio do seu _site_, [o preço dos combustíveis em todos os postos de gasolina do município](https://www.joinville.sc.gov.br/publicacoes/pesquisas-de-precos-combustiveis-2023/).
+O PROCON de Joinville/SC, disponibiliza, por meio do seu _site_, [o preço dos combustíveis em todos os postos de gasolina do município](https://www.joinville.sc.gov.br/publicacoes/pesquisas-de-precos-combustiveis-2024/).
 
 Assim, o objetivo deste projeto é coletar esses dados e alimentar um banco de dados, a partir do qual é gerado um _dashboard_ e tabelas nas quais é possível fazer a filtragem por bairro.
 
@@ -27,8 +27,8 @@ O _back-end_ do projeto é estruturado em três módulos:
 
 ## Execução
 
-* Para rodar o _scraper_:
-	* Construir o _container_ - usei o podman, mas é igual para o Docker - a partir do diretório atual:
+* Para rodar o _scraper_ dentro de um _container_:
+	* Construir o _container_ - usei o podman, mas é igual para o Docker - a partir da raiz:
 		`podman build -t docker-scraper -f scraper/Dockerfile .`
 	* Como o _scraper_ escreve para um diretório, é preciso executar o _container_ indicando onde gravar os dados.
 		`podman run -d -v [local onde gravar os dados]:/app/data docker-scraper:latest`
@@ -42,6 +42,10 @@ O _back-end_ do projeto é estruturado em três módulos:
 * TODO: configurar Actions para rodar os testes automaticamente
 * TODO: automatizar o _deploy_ 
 * TODO: ver se há alguma forma mais inteligente, evitando raspagem de PDF ou ao menos tornando ela mais resistenta a mudanças no layout do PDF.
+
+## Problemas encontrados
+
+* A tabela fornecida pela prefeitura é inconsistente, com postos repetidos ou que mudaram de nome. 
 
 ## Licença
 

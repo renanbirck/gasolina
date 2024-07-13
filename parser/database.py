@@ -37,6 +37,7 @@ class Database:
                                 NomePosto VARCHAR(255) NOT NULL,\
                                 EnderecoPosto VARCHAR(255) NOT NULL,\
                                 BairroPosto VARCHAR(32),\
+                                UNIQUE(IdPosto, NomePosto, EnderecoPosto, BairroPosto) ON CONFLICT REPLACE,\
                                 FOREIGN KEY (IdDistribuidora)\
                                     REFERENCES Distribuidoras(IdDistribuidora)\
                                     ON DELETE RESTRICT\
