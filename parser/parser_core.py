@@ -159,4 +159,14 @@ class PDFParser:
         self.database.cursor.execute("SELECT COUNT(IdPosto) FROM PostosGasolina")
         logging.info(f"Cadastrei {self.database.cursor.fetchone()[0]} postos.")
 
-        # Adicionar as pesquisas
+        # Adicionar os preços.
+        logging.info(f"Terceira passagem: carregando os preços...")
+
+        id_pesquisa = self.database.cursor.execute("SELECT IdPesquisa FROM Pesquisas WHERE DataPesquisa=(?)", (data_pesquisa,)).fetchone()[0]
+
+        logging.info(f"o ID da pesquisa do dia {data_pesquisa} é {id_pesquisa}.")
+
+        for posto in self.postos:
+            self.database.cursor.execute('INSERT INTO Precos(IdPesquisa, IdPosto, PrecoGasolinaComum, \
+                                                             PrecoGasolinaAditivada, PrecoEtanol, PrecoDiesel, \
+                                                             PrecoGNV) VALUES (?, ?, ?, ?, ?, ?, ?)', (id_pesquisa, posto["id"], posto["comum"], posto["aditivada"], posto["etanol"], posto["diesel"], posto["gnv"],))
