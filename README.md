@@ -6,11 +6,11 @@ O PROCON de Joinville/SC, disponibiliza, por meio do seu _site_, [o preço dos c
 
 Assim, o objetivo deste projeto é coletar esses dados e alimentar um banco de dados, a partir do qual é gerado um _dashboard_ e tabelas nas quais é possível fazer a filtragem por bairro.
 
-O _back-end_ do projeto é estruturado em três módulos:
+O _back-end_ do projeto é estruturado em:
 
 * **scraper**: faz a raspagem do site do PROCON e determina o arquivo PDF a ser baixado.
 * **parser**: processa o arquivo PDF, carregando os valores dele no banco de dados.
-* **api**: disponibiliza os dados coletados para o _front-end_.
+* **data-explorer**: um _front-end_ simples usando a bibloteca [streamlit](https://streamlit.io), para apoio ao desenvolvimento
 
 ## Requisitos
 
@@ -32,6 +32,7 @@ O _back-end_ do projeto é estruturado em três módulos:
 		`podman build -t docker-scraper -f scraper/Dockerfile .`
 	* Como o _scraper_ escreve para um diretório, é preciso executar o _container_ indicando onde gravar os dados.
 		`podman run -d -v [local onde gravar os dados]:/app/data docker-scraper:latest`
+        É ideal que o local seja um caminho absoluto, para evitar ambiguidades.
 
 * Para rodar o _parser_:
 	* No diretório `parser`, rodar o _script_ `run_parser.sh`, fornecendo um arquivo adequado como parâmetro.
