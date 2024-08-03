@@ -3,6 +3,7 @@ __pycache__
 *.pyc
 config.py
 bin
+etc
 include
 lib
 lib64
