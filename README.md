@@ -11,6 +11,7 @@ O _back-end_ do projeto é estruturado em:
 * **scraper**: faz a raspagem do site do PROCON e determina o arquivo PDF a ser baixado.
 * **parser**: processa o arquivo PDF, carregando os valores dele no banco de dados.
 * **data-explorer**: um _front-end_ simples usando a bibloteca [streamlit](https://streamlit.io), para apoio ao desenvolvimento
+* **api**: uma API utilizando o fastapi
 
 ## Requisitos
 
@@ -21,8 +22,9 @@ O _back-end_ do projeto é estruturado em:
 * Para o parser:
 	* [pymupdf](https://github.com/pymupdf/PyMuPDF/issues/) (foi o que funcionou melhor **para este layout de PDF** nos meus testes);
 	* TODO: continuar a parte de processamento do PDF
+* Para a API:
+	* FastAPI
 * TODO: ver o uso de um ORM, substituindo o uso de SQL puro.
-* TODO: definir como será feita a API.
 * TODO: definir como será feito o front-end.
 
 ## Execução
@@ -37,16 +39,22 @@ O _back-end_ do projeto é estruturado em:
 * Para rodar o _parser_:
 	* No diretório `parser`, rodar o _script_ `run_parser.sh`, fornecendo um arquivo adequado como parâmetro.
 
-* TODO: a estrutura dos PDFs mudou conforme o tempo, então preciso ver como fazer. Provavelmente vou fazer _data wrangling_ na mão e fornecer um CSV.
-* TODO: integrar os testes com o _container_.
-* TODO: escrever Dockerfiles para o resto
-* TODO: configurar Actions para rodar os testes automaticamente
-* TODO: automatizar o _deploy_ 
-* TODO: ver se há alguma forma mais inteligente, evitando raspagem de PDF ou ao menos tornando ela mais resistenta a mudanças no layout do PDF.
+* Para rodar a _api_:
+    * No diretório `api`, rodar `fastapi dev main.py`.
+
+## Coisas a fazer:
+* A estrutura dos PDFs mudou conforme o tempo, então preciso ver como fazer. Provavelmente vou fazer _data wrangling_ na mão e fornecer um CSV.
+* Verificar se vale a pena fazer a raspagem de forma assíncrona
+* Integrar os testes com o _container_.
+* Escrever Dockerfiles para o resto
+* Configurar Actions para rodar os testes automaticamente
+* Automatizar o _deploy_ 
+* Fazer a raspagem comunicar via API em vez de chamadas SQL diretamente no BD.
+* Usar TypeScript e algum framework, como React ou vue, no front-end
 
 ## Problemas encontrados
 
-* A tabela fornecida pela prefeitura é inconsistente, com postos repetidos ou que mudaram de nome. 
+* A tabela fornecida pela prefeitura é inconsistente, com postos repetidos ou que mudaram de nome. Isso irá influenciar na estrutura do BD. 
 
 ## Licença
 

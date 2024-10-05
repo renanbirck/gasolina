@@ -7,3 +7,6 @@ from . import models # não estamos usando schemas ainda
 
 def get_pesquisas(db: Session):
     return db.query(models.Pesquisa).all()
+
+def get_distribuidoras(db: Session):
+    return db.query(models.Distribuidora).all()
