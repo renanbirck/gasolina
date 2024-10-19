@@ -11,3 +11,11 @@ class Distribuidora(Base):
     __tablename__ = "Distribuidoras"
     id = Column("IdDistribuidora", Integer, primary_key=True)
     nome = Column("NomeDistribuidora", String, unique=True)
+
+class PostoGasolina(Base):
+    __tablename__ = "PostosGasolina"
+    id = Column("IdPosto", Integer, primary_key=True, unique=True)
+    distribuidora = Column("IdDistribuidora", Integer)
+    nome = Column("NomePosto", String)
+    endereco = Column("EnderecoPosto", String)
+    bairro = Column("BairroPosto", String)
