@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Numeric
 from sqlalchemy.orm import relationship
 from .database import Base # Os modelos herdam de Base
 
@@ -25,3 +25,8 @@ class Precos(Base):
     id = Column("IdPreco", Integer, primary_key=True)
     pesquisa = Column("IdPesquisa", Integer)
     posto = Column("IdPosto", Integer)
+    precoGasolinaComum = Column("PrecoGasolinaComum", Numeric)
+    precoGasolinaAditivada = Column("PrecoGasolinaAditivada", Numeric)
+    precoEtanol = Column("PrecoEtanol", Numeric)
+    precoDiesel = Column("PrecoDiesel", Numeric)
+    precoGNV = Column("PrecoGNV", Numeric)
