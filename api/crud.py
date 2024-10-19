@@ -38,4 +38,35 @@ def get_postos(db: Session):
     return postos
 
 def dados_pesquisa(db: Session, id_pesquisa: int):
-    query = db.query()
+    # Fornecido o ID da pesquisa, retorna todos os postos que participaram dela, com os preços.
+    
+    # EM SQL puro:
+    # SELECT DataPesquisa, NomePosto, PrecoGasolinaComum, PrecoGasolinaAditivada, PrecoEtanol, PrecoDiesel, PrecoGNV FROM Precos P 
+    # JOIN Pesquisas Pe ON P.IdPesquisa = Pe.IdPesquisa 
+    # JOIN PostosGasolina PG on P.IdPosto = PG.IdPosto
+    # WHERE P.IdPesquisa = {id_pesquisa}
+
+    query = db.query(models.Pesquisa.data, models.PostoGasolina.nome, models.Precos.precoGasolinaComum, models.Precos.precoGasolinaAditivada,
+                     models.Precos.precoEtanol,models.Precos.precoDiesel,models.Precos.precoGNV) \
+    .join(models.Pesquisa, models.Precos.pesquisa==models.Pesquisa.id) \
+    .join(models.PostoGasolina, models.Precos.posto == models.PostoGasolina.id)  \
+    .filter(models.Precos.pesquisa == id_pesquisa)
+    
+
+    result = query.all()
+
+    print(result)
+    dados_pesquisa = [
+        {
+            "id": row[0],
+            "nome": row[1],
+            "gasolina_comum": row[2],
+            "gasolina_aditivada": row[3],
+            "etanol": row[4],
+            "diesel": row[5],
+            "GNV": row[6]
+        }
+        for row in result
+    ]
+
+    return dados_pesquisa
