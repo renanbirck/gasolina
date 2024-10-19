@@ -21,8 +21,9 @@ def get_postos(db: Session):
     result = query.all()
     
     # XXX: pedi ajuda para o ChatGPT aqui, ver se tem como fazer de forma mais elegante
-
-    # Convert the list of tuples to a list of dictionaries
+    # O que o FastAPI precisa é de uma lista de dicionários, e a query retornou
+    # uma lista de tuplas. 
+    
     postos = [
         {
             "id": row[0],
@@ -35,3 +36,6 @@ def get_postos(db: Session):
     ]
     
     return postos
+
+def dados_pesquisa(db: Session, id_pesquisa: int):
+    query = db.query()

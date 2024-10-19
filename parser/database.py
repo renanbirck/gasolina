@@ -49,16 +49,16 @@ class Database:
                                 IdPreco INTEGER PRIMARY KEY NOT NULL,\
                                 IdPesquisa INTEGER,\
                                 IdPosto INTEGER,\
-                                PrecoGasolinaComum INTEGER,\
-                                PrecoGasolinaAditivada INTEGER,\
-                                PrecoEtanol INTEGER,\
-                                PrecoDiesel INTEGER,\
-                                PrecoGNV INTEGER,\
+                                PrecoGasolinaComum NUMERIC,\
+                                PrecoGasolinaAditivada NUMERIC,\
+                                PrecoEtanol NUMERIC,\
+                                PrecoDiesel NUMERIC,\
+                                PrecoGNV NUMERIC,\
                                 FOREIGN KEY (IdPesquisa)\
                                     REFERENCES Pesquisas(IdPesquisa)\
                                     ON DELETE RESTRICT,\
                                 FOREIGN KEY (IdPosto)\
-                                    REFERENCES Posto(IdPosto)\
+                                    REFERENCES PostosGasolina(IdPosto)\
                                     ON DELETE RESTRICT);")
         self.connection.commit()
 

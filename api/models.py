@@ -19,3 +19,9 @@ class PostoGasolina(Base):
     nome = Column("NomePosto", String)
     endereco = Column("EnderecoPosto", String)
     bairro = Column("BairroPosto", String)
+
+class Precos(Base):
+    __tablename__ = "Precos"
+    id = Column("IdPreco", Integer, primary_key=True)
+    pesquisa = Column("IdPesquisa", Integer)
+    posto = Column("IdPosto", Integer)

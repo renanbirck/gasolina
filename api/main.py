@@ -34,10 +34,6 @@ async def lista_pesquisas(db: Session = Depends(get_db)):
 async def lista_todos_postos(db: Session = Depends(get_db)):
     return crud.get_postos(db)
 
-@app.get("/postos/{id_pesquisa}")
+@app.get("/pesquisa/{id_pesquisa}")
 async def lista_postos_da_pesquisa(id_pesquisa):
     pass 
-
-@app.get("/pesquisa/{id_pesquisa}")
-async def pega_dados_pesquisa(id_pesquisa):
-    pass
