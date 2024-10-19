@@ -30,7 +30,7 @@ async def lista_distribuidoras(db: Session = Depends(get_db)):
 async def lista_pesquisas(db: Session = Depends(get_db)):
     return crud.get_pesquisas(db)
 
-@app.get("/listaPostos")
+@app.get("/postos")
 async def lista_todos_postos(db: Session = Depends(get_db)):
     return crud.get_postos(db)
 
