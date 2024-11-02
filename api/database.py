@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker
 ## database.py: arquivo que trata da conexão ao BD com os dados das pesquisas.
 ## O modelo de dados, com as tabelas e relacionamentos, é descrito em model.py
 
-DB_URL = "sqlite:///../parser/pesquisas.db" # Caminho para o BD
+DB_URL = "sqlite:///../data/pesquisas.db" # Caminho para o BD
 
 # Criar a conexão ao BD
 

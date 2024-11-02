@@ -8,7 +8,7 @@ class Database:
     connection, cursor = None, None
     file_name = None
 
-    def __init__(self, file_name='pesquisas.db'):
+    def __init__(self, file_name='../data/pesquisas.db'):
         self.file_name = file_name
         self.initialize_DB()
 
