@@ -4,6 +4,8 @@ from sqlalchemy.orm import Session
 from . import crud, models # não estamos usando schemas ainda
 from .database import SessionLocal, engine
 
+import uvicorn
+
 # O arquivo principal da API.
 
 # Carregar os modelos
@@ -37,3 +39,7 @@ async def lista_todos_postos(db: Session = Depends(get_db)):
 @app.get("/pesquisa/{id_pesquisa}")
 async def lista_postos_da_pesquisa(id_pesquisa, db: Session = Depends(get_db)):
     return crud.dados_pesquisa(db, id_pesquisa) 
+
+# https://stackoverflow.com/questions/75040507/how-to-access-fastapi-backend-from-a-different-machine-ip-on-the-same-local-netw
+if __name__ == '__main__':
+    uvicorn.run(app, host='0.0.0.0', port=8080)

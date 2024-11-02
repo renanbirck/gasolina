@@ -23,4 +23,9 @@ RUN pip install fastapi sqlalchemy fastapi[standard]
 
 RUN ls -la 
 RUN pwd
-CMD ["fastapi", "dev", "main.py"]
+
+# Rodar em produção, escutando no http://0.0.0.0
+CMD ["fastapi", "run"]
+
+
+# CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
