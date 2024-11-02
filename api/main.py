@@ -42,4 +42,4 @@ async def lista_postos_da_pesquisa(id_pesquisa, db: Session = Depends(get_db)):
 
 # https://stackoverflow.com/questions/75040507/how-to-access-fastapi-backend-from-a-different-machine-ip-on-the-same-local-netw
 if __name__ == '__main__':
-    uvicorn.run(app, host='0.0.0.0', port=8080)
+    uvicorn.run(app, host='0.0.0.0', port=8000)

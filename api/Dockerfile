@@ -8,6 +8,8 @@ RUN mkdir -p /data
 WORKDIR /app 
 RUN cd /app 
 
+EXPOSE 8000 
+
 # Copiar os arquivos da aplicação
 COPY api/*.py .
 COPY ../requirements.txt . 
@@ -26,6 +28,3 @@ RUN pwd
 
 # Rodar em produção, escutando no http://0.0.0.0
 CMD ["fastapi", "run"]
-
-
-# CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
