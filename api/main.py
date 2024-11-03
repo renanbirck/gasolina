@@ -4,6 +4,8 @@ from sqlalchemy.orm import Session
 from . import crud, models # não estamos usando schemas ainda
 from .database import SessionLocal, engine
 
+from fastapi.middleware.cors import CORSMiddleware
+
 import uvicorn
 
 # O arquivo principal da API.
@@ -11,6 +13,22 @@ import uvicorn
 # Carregar os modelos
 models.Base.metadata.create_all(bind=engine)
 app = FastAPI() 
+
+# Configurações de CORS para permitir o uso da API.
+
+origins = [
+    "http://localhost",
+    "http://localhost:8080",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["*"]
+)
 
 # carregar o BD
 def get_db():
