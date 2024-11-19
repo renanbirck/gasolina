@@ -53,6 +53,22 @@ class TestParser(unittest.TestCase):
         self.assertEqual(partes["etanol"], 103)
         self.assertEqual(partes["gnv"], 104)
 
+    def test_linha_quebrada(self):
+        # alguns PDF tem algumas linhas com espaço oculto no começo,
+        # por razões que a própria razão desconhece
+
+        linha = [None, '69420', 'Posto Hipotético\nR. XYZ, 1399, Bairro', 'ALFA', '100', '101', '102', '103', '104']
+        partes = parser_core.separa_partes(linha)
+        self.assertEqual(partes["id"], 69420)
+        self.assertEqual(partes["nome"], "Posto Hipotético")
+        self.assertEqual(partes["endereço"], "R. XYZ, 1399")
+        self.assertEqual(partes["bairro"], "Bairro")
+        self.assertEqual(partes["distribuidora"], "ALFA")
+        self.assertEqual(partes["comum"], 100)
+        self.assertEqual(partes["aditivada"], 101)
+        self.assertEqual(partes["diesel"], 102)
+        self.assertEqual(partes["etanol"], 103)
+        self.assertEqual(partes["gnv"], 104)
 
     # Tratar o caso do posto não vender um dos combustíveis
     def test_nao_vende_GNV(self):

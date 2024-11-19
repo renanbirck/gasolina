@@ -31,16 +31,20 @@ def mini_date_parser(date):
 def separa_partes(linha):
     print(f">>> {linha}")
 
+    # Se a linha começar com None (como aconteceu com o PDF de novembro/2024), então a gente precisa de um "offset".
+    # XXX: Seria interessante generalizar isso
+    precisa_offset = (linha[0] == None)
+
     posto = {}
     try:
-        posto["id"] = int(linha[0])
+        posto["id"] = int(linha[0 + precisa_offset])
     except:
         raise ValueError("A linha não tem um ID válido!")
 
     # "Posto XPTO\nR. XYZ, 139, Bairro" -> ["Posto XPTO", "R. XYZ, 139", "Bairro"]
     # "Posto XPTO\nR. XYZ, 139" -> ["Posto XPTO", "R. XYZ, 139", None]
 
-    partes_endereco = linha[1].split('\n')
+    partes_endereco = linha[1 + precisa_offset].split('\n')
     posto["nome"] = partes_endereco[0]
 
     endereco_bairro = partes_endereco[1:][0].split(",")
@@ -48,10 +52,10 @@ def separa_partes(linha):
     posto["endereço"] = ','.join(endereco_bairro[:-1])
     posto["bairro"] = endereco_bairro[-1].strip()
 
-    posto["distribuidora"] = linha[2]
+    posto["distribuidora"] = linha[2 + precisa_offset]
 
     campos = ["comum", "aditivada", "diesel", "etanol", "gnv"]
-    posto.update(zip(campos, [(float(preco.replace(',','.')) if '-' not in preco else None) for preco in linha[3:]]))
+    posto.update(zip(campos, [(float(preco.replace(',','.')) if '-' not in preco else None) for preco in linha[3 + precisa_offset:]]))
    
     # XXX: Gambiarra para desfazer quando a prefeitura não colocou bairro.
 
