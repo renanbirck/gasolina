@@ -5,8 +5,11 @@ from . import models # não estamos usando schemas ainda
 # no momento é só leitura, futuramente o scraper
 # vai atualizar pela API
 
+def get_ultima_pesquisa(db: Session):
+    return db.query(models.Pesquisa).order_by(models.Pesquisa.id.desc()).first()
+
 def get_pesquisas(db: Session):
-    return db.query(models.Pesquisa).order_by(models.Pesquisa.data.desc()).all()
+    return db.query(models.Pesquisa).order_by(models.Pesquisa.id.desc()).all()
 
 def get_distribuidoras(db: Session):
     return db.query(models.Distribuidora).all()

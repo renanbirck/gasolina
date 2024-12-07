@@ -44,6 +44,10 @@ def get_db():
 async def root():
     return {"message": "Hello, World!"}
 
+@app.get("/ultima_pesquisa")
+async def ultima_pesquisa(db: Session = Depends(get_db)):
+    return crud.get_ultima_pesquisa(db)
+
 @app.get("/distribuidoras")
 async def lista_distribuidoras(db: Session = Depends(get_db)):
     return crud.get_distribuidoras(db)
