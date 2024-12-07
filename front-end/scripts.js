@@ -31,6 +31,9 @@ window.onload = function() {
 }
 
 function atualizaTabelaPesquisas() { 
+
+  tabela = document.querySelector("#tabelaResultados").style.display = 'inline'
+  
   cabecalhoTabela = document.querySelector("#cabecalhoTabela")
   conteudoTabela = document.querySelector("#conteudoTabela")
 
@@ -45,16 +48,16 @@ function atualizaTabelaPesquisas() {
       cabecalhoTabela.innerHTML = '<tr>'
       colunas_tabela.map((coluna) => cabecalhoTabela.innerHTML += `<th>${coluna.replace("_", " ")}</th>`)
       cabecalhoTabela.innerHTML += '</tr>'
-      
+
       retorno.forEach((linhaRetornada) => {
         console.log(linhaRetornada)
         html = "<tr>"
-        colunas_tabela.map((coluna) => html += `<td> ${linhaRetornada[coluna]} </td>`)
+        colunas_tabela.map((coluna) => html += `<td> ${linhaRetornada[coluna] === null?"-":linhaRetornada[coluna]} </td>`)
         
         html += "</tr>"
         
         conteudoTabela.innerHTML += html;
-
+ 
       })
 
     }

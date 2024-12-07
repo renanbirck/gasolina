@@ -1,7 +1,27 @@
+#seletorPesquisa {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
 footer {
     text-align: center;
 }
 
 #tabelaResultados {
     text-align: center;
+}
+
+th { 
+    text-transform: capitalize;
+}
+
+table {
+    
+    display: block;
+    border-spacing: 20px 0;
+}
+  
+  /* some border to see the spacing */
+th, td {
+    border: 1px solid;
 }
