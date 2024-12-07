@@ -1,41 +1,39 @@
 console.log("Olá mundo!")
-console.log("aqui")
+
 // Carregar os dados da API
 
 const API_BASE = "http://127.0.0.1:8000"
 
-const requestPesquisas = new Request(`${API_BASE}/pesquisas`)
+function carregaListagemPesquisas() { 
+  const requestPesquisas = new Request(`${API_BASE}/pesquisas`)
 
-fetch(requestPesquisas) // Pega os dados...
-.then(retorno => retorno.json())
-.then(dadosPesquisas => {
-  console.log(dadosPesquisas)
+  fetch(requestPesquisas) // Pega os dados...
+  .then(retorno => retorno.json())
+  .then(dadosPesquisas => {
+    
+    dadosPesquisas.forEach((element) => {
+      option = document.createElement("option");
+      option.value = element.id;
+      option.text = element.data;
+      document.querySelector("#listaMeses").add(option);
+    })
 
-  dadosPesquisas.forEach((element) => {
-    option = document.createElement("option");
-    option.value = element.id;
-    option.text = element.data;
-    document.querySelector("#listaMeses").add(option);
   })
-})
-.catch(rejected => { // Deu errado
-    console.log("Erro ao puxar os dados da API! " + rejected);
-});
-
-// e então, quando o usuário escolher uma pesquisa, gerar a tabela
-window.onload = function() { 
-  document.querySelector("#listaMeses").onchange = function() {
-    console.log(`Você escolheu a pesquisa ${document.querySelector("#listaMeses").value}`);
-    atualizaTabelaPesquisas();
-  }
+  .catch(rejected => { // Deu errado
+      console.log("Erro ao puxar os dados da API! " + rejected);
+  });
 }
+
 
 function atualizaTabelaPesquisas() { 
 
   tabela = document.querySelector("#tabelaResultados").style.display = 'inline'
-  
+
   cabecalhoTabela = document.querySelector("#cabecalhoTabela")
   conteudoTabela = document.querySelector("#conteudoTabela")
+
+  cabecalhoTabela.innerHTML = ''
+  conteudoTabela.innerHTML = ''
 
   console.log("Atualizando a tabela...");
   pegaDadosPesquisa(document.querySelector("#listaMeses").value)
@@ -57,13 +55,9 @@ function atualizaTabelaPesquisas() {
         html += "</tr>"
         
         conteudoTabela.innerHTML += html;
- 
       })
-
     }
-    
   );
-
 }
 
 function pegaDadosPesquisa(idPesquisa) {
@@ -75,3 +69,15 @@ function pegaDadosPesquisa(idPesquisa) {
   .then(retorno => retorno.json())
 }
 
+// definidas as funções, podemos começar o código
+
+// carregar a listagem de pesquisas...
+carregaListagemPesquisas()
+
+// ... e então, quando o usuário escolher uma pesquisa, gerar a tabela
+window.onload = function() { 
+  document.querySelector("#listaMeses").onchange = function() {
+    console.log(`Você escolheu a pesquisa ${document.querySelector("#listaMeses").value}`);
+    atualizaTabelaPesquisas();
+  }
+}

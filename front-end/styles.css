@@ -5,6 +5,7 @@
 
 footer {
     text-align: center;
+    margin-top: 20px;
 }
 
 #tabelaResultados {
@@ -16,12 +17,8 @@ th {
 }
 
 table {
-    
-    display: block;
+    display: block; /* por padrão é invisível */
     border-spacing: 20px 0;
+    
 }
-  
-  /* some border to see the spacing */
-th, td {
-    border: 1px solid;
-}
+
