@@ -31,25 +31,31 @@ window.onload = function() {
 }
 
 function atualizaTabelaPesquisas() { 
-  tabela = document.querySelector("#tabelaResultados")
+  cabecalhoTabela = document.querySelector("#cabecalhoTabela")
+  conteudoTabela = document.querySelector("#conteudoTabela")
 
   console.log("Atualizando a tabela...");
   pegaDadosPesquisa(document.querySelector("#listaMeses").value)
   .then(
     retorno => { 
-      retorno.forEach((linhaRetornada) => {
-        html = `<tr> <td> ${linhaRetornada.nome} </td> 
-                     <td> ${linhaRetornada.gasolina_comum} </td> 
-                     <td> ${linhaRetornada.gasolina_aditivada} </td>
-                     <td> ${linhaRetornada.etanol} </td>
-                     <td> ${linhaRetornada.diesel} </td>
-                     <td> ${linhaRetornada.GNV} </td>
-                </tr>`;
-        tabela.innerHTML += html;
-      })
+      colunas_tabela = Object.keys(retorno[0]).slice(1)  // O primeiro é sempre ID, pela estrutura da API, mas não será necessário
 
+      // Construir o cabeçalho...
+     
+      cabecalhoTabela.innerHTML = '<tr>'
+      colunas_tabela.map((coluna) => cabecalhoTabela.innerHTML += `<th>${coluna.replace("_", " ")}</th>`)
+      cabecalhoTabela.innerHTML += '</tr>'
       
+      retorno.forEach((linhaRetornada) => {
+        console.log(linhaRetornada)
+        html = "<tr>"
+        colunas_tabela.map((coluna) => html += `<td> ${linhaRetornada[coluna]} </td>`)
+        
+        html += "</tr>"
+        
+        conteudoTabela.innerHTML += html;
 
+      })
 
     }
     
