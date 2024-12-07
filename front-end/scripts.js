@@ -24,19 +24,25 @@ function carregaListagemPesquisas() {
   });
 }
 
-
 function atualizaTabelaPesquisas() { 
 
+  idPesquisa = document.querySelector("#listaMeses").value;
   tabela = document.querySelector("#tabelaResultados").style.display = 'inline'
 
   cabecalhoTabela = document.querySelector("#cabecalhoTabela")
   conteudoTabela = document.querySelector("#conteudoTabela")
 
+  // Limpar a tabela, definindo uma condição inicial
   cabecalhoTabela.innerHTML = ''
   conteudoTabela.innerHTML = ''
 
   console.log("Atualizando a tabela...");
-  pegaDadosPesquisa(document.querySelector("#listaMeses").value)
+
+  // Pega os dados da pesquisa da API, retornando uma promise que será resolvida por quem chamou.
+  urlPesquisa = `${API_BASE}/pesquisa/${idPesquisa}`
+  console.log(`a minha URL é ${urlPesquisa}`);
+  fetch(urlPesquisa) // pegar os dados..
+  .then(retorno => retorno.json())
   .then(
     retorno => { 
       colunas_tabela = Object.keys(retorno[0]).slice(1)  // O primeiro é sempre ID, pela estrutura da API, mas não será necessário
@@ -51,23 +57,16 @@ function atualizaTabelaPesquisas() {
         console.log(linhaRetornada)
         html = "<tr>"
         colunas_tabela.map((coluna) => html += `<td> ${linhaRetornada[coluna] === null?"-":linhaRetornada[coluna]} </td>`)
-        
         html += "</tr>"
-        
         conteudoTabela.innerHTML += html;
       })
     }
   );
+
+
+  
 }
 
-function pegaDadosPesquisa(idPesquisa) {
-  // Pega os dados da pesquisa da API, retornando uma promise que será resolvida por quem chamou.
-  urlPesquisa = `${API_BASE}/pesquisa/${idPesquisa}`
-
-  console.log(`a minha URL é ${urlPesquisa}`);
-  return fetch(urlPesquisa) // pegar os dados..
-  .then(retorno => retorno.json())
-}
 
 // definidas as funções, podemos começar o código
 
@@ -80,4 +79,7 @@ window.onload = function() {
     console.log(`Você escolheu a pesquisa ${document.querySelector("#listaMeses").value}`);
     atualizaTabelaPesquisas();
   }
+  
+  // carrega a última pesquisa (que é a primeira na lista de pesquisas)
+  atualizaTabelaPesquisas();
 }
