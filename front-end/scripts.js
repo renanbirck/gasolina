@@ -1,6 +1,7 @@
 console.log("Olá mundo!")
 
-// Carregar os dados da API
+// Código em JS que faz a comunicação com a API, coletando dados 
+// e carregando eles na página. 
 
 const API_BASE = "http://127.0.0.1:8000"
 
@@ -53,8 +54,8 @@ function atualizaTabelaPesquisas() {
       colunas_tabela.map((coluna) => cabecalhoTabela.innerHTML += `<th>${coluna.replace("_", " ")}</th>`)
       cabecalhoTabela.innerHTML += '</tr>'
 
+      // e a tabela
       retorno.forEach((linhaRetornada) => {
-        console.log(linhaRetornada)
         html = "<tr>"
         colunas_tabela.map((coluna) => html += `<td> ${linhaRetornada[coluna] === null?"-":linhaRetornada[coluna]} </td>`)
         html += "</tr>"
@@ -62,11 +63,8 @@ function atualizaTabelaPesquisas() {
       })
     }
   );
-
-
   
 }
-
 
 // definidas as funções, podemos começar o código
 
