@@ -1,0 +1,21 @@
+<html>
+  <head>
+    <title>Pesquisas de Preços de Combustíveis em Joinville/SC</title>
+  </head>
+
+  <body>
+    <h1>Lista de Postos</h1>
+    <table>
+      <tr>
+        <th>Nome do Posto</th> 
+        <th>Endereço</th>
+      </tr>
+        {% for posto in postos %}
+        <tr>
+          <td> {{ posto.posto_nome }} </td>
+          <td> {{ posto.endereco }}  - {{ posto.bairro }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+  </body>
+</html>
