@@ -22,11 +22,11 @@
           <td> {{ posto.id }} </td>
           <td> {{ posto.nome }} </td>
           <td> {{ posto.endereco }} - {{ posto.bairro }}</td>
-          <td> {{ '%.3f' % posto.gasolina_comum if posto.gasolina_comum else '---' }} </td> 
-          <td> {{ '%.3f' % posto.gasolina_aditivada if posto.gasolina_aditivada else '---'}} </td>
-          <td> {{ '%.3f' % posto.etanol if posto.etanol else '---'}} </td>
-          <td> {{ '%.3f' % posto.diesel if posto.diesel else '---' }} </td>
-          <td> {{ '%.3f' % posto.GNV if posto.GNV else '---' }} </td>
+          <td> {{ '%.2f' % posto.gasolina_comum if posto.gasolina_comum else '---' }} </td> 
+          <td> {{ '%.2f' % posto.gasolina_aditivada if posto.gasolina_aditivada else '---'}} </td>
+          <td> {{ '%.2f' % posto.etanol if posto.etanol else '---'}} </td>
+          <td> {{ '%.2f' % posto.diesel if posto.diesel else '---' }} </td>
+          <td> {{ '%.2f' % posto.GNV if posto.GNV else '---' }} </td>
         </tr>
         {% endfor %}
     </table>

@@ -73,23 +73,21 @@ async def dados_pesquisa(id_pesquisa, db: Session = Depends(get_db)):
 async def lista_infos_posto(id_posto, db: Session = Depends(get_db)):
     return crud.get_dados_posto(db, id_posto)
 
-
 ## A raiz da aplicação, mostrando a lista de todos os postos:
 @app.get("/", response_class=HTMLResponse)
 async def raiz_app(request: Request, db: Session = Depends(get_db)):
 
-    postos = await lista_todos_postos(db)
     data_ultima_pesquisa = await ultima_pesquisa(db)
-
     dados_ultima_pesquisa = await dados_pesquisa(data_ultima_pesquisa.id, db)
-    print(dados_ultima_pesquisa)
 
     return templates.TemplateResponse(
-        request=request, name="index.html", context={"postos": postos, "ultima_pesquisa": data_ultima_pesquisa, "dados_ultima_pesquisa": dados_ultima_pesquisa} 
+        request=request, name="index.html", context={"ultima_pesquisa": data_ultima_pesquisa, "dados_ultima_pesquisa": dados_ultima_pesquisa} 
     )
 
+print("--- Rotas da aplicação ---")
 for route in app.router.routes:
     print(route.name, route.path)
+print("--------------------------")
 
 # https://stackoverflow.com/questions/75040507/how-to-access-fastapi-backend-from-a-different-machine-ip-on-the-same-local-netw
 if __name__ == '__main__':

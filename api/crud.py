@@ -64,12 +64,12 @@ def dados_pesquisa(db: Session, id_pesquisa: int):
     # Fornecido o ID da pesquisa, retorna todos os postos que participaram dela, com os preços.
     
     # EM SQL puro:
-    # SELECT DataPesquisa, NomePosto, PrecoGasolinaComum, PrecoGasolinaAditivada, PrecoEtanol, PrecoDiesel, PrecoGNV FROM Precos P 
+    # SELECT DataPesquisa, IdPosto, NomePosto, PrecoGasolinaComum, PrecoGasolinaAditivada, PrecoEtanol, PrecoDiesel, PrecoGNV FROM Precos P 
     # JOIN Pesquisas Pe ON P.IdPesquisa = Pe.IdPesquisa 
     # JOIN PostosGasolina PG on P.IdPosto = PG.IdPosto
     # WHERE P.IdPesquisa = {id_pesquisa}
 
-    query = db.query(models.Pesquisa.data, models.PostoGasolina.nome, models.PostoGasolina.endereco, models.PostoGasolina.bairro, models.Precos.precoGasolinaComum, models.Precos.precoGasolinaAditivada,
+    query = db.query(models.Pesquisa.data, models.PostoGasolina.id, models.PostoGasolina.nome, models.PostoGasolina.endereco, models.PostoGasolina.bairro, models.Precos.precoGasolinaComum, models.Precos.precoGasolinaAditivada,
                      models.Precos.precoEtanol,models.Precos.precoDiesel,models.Precos.precoGNV) \
     .join(models.Pesquisa, models.Precos.pesquisa==models.Pesquisa.id) \
     .join(models.PostoGasolina, models.Precos.posto == models.PostoGasolina.id)  \
@@ -78,19 +78,19 @@ def dados_pesquisa(db: Session, id_pesquisa: int):
 
     result = query.all()
 
-    print(result)
+    print(f"Retorno da query: {result}")
     dados_pesquisa = [
         {
-            "id": id_pesquisa,
             "data": row[0],
-            "nome": row[1],
-            "endereco": row[2],
-            "bairro": row[3],
-            "gasolina_comum": row[4],
-            "gasolina_aditivada": row[5],
-            "etanol": row[6],
-            "diesel": row[7],
-            "GNV": row[8]
+            "id": str(row[1]),
+            "nome": row[2],
+            "endereco": row[3],
+            "bairro": row[4],
+            "gasolina_comum": row[5],
+            "gasolina_aditivada": row[6],
+            "etanol": row[7],
+            "diesel": row[8],
+            "GNV": row[9]
         }
         for row in result
     ]
