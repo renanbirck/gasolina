@@ -1,10 +1,13 @@
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, Request, APIRouter, HTTPException
+from fastapi.responses import HTMLResponse
 from sqlalchemy.orm import Session
 
 from . import crud, models # não estamos usando schemas ainda
 from .database import SessionLocal, engine
 
 from fastapi.middleware.cors import CORSMiddleware
+
+from fastapi.templating import Jinja2Templates
 
 import uvicorn
 
@@ -13,6 +16,12 @@ import uvicorn
 # Carregar os modelos
 models.Base.metadata.create_all(bind=engine)
 app = FastAPI() 
+
+router = APIRouter(
+    prefix='/postos'
+)
+
+app.include_router(router)
 
 # Configurações de CORS para permitir o uso da API.
 
@@ -40,9 +49,7 @@ def get_db():
     finally:
         db.close()
 
-@app.get("/")
-async def root():
-    return {"message": "Hello, World!"}
+templates = Jinja2Templates(directory="templates")
 
 @app.get("/ultima_pesquisa")
 async def ultima_pesquisa(db: Session = Depends(get_db)):
@@ -56,7 +63,7 @@ async def lista_distribuidoras(db: Session = Depends(get_db)):
 async def lista_pesquisas(db: Session = Depends(get_db)):
     return crud.get_pesquisas(db)
 
-@app.get("/postos")
+@app.get("/postos", name="postos")
 async def lista_todos_postos(db: Session = Depends(get_db)):
     return crud.get_postos(db)
 
@@ -67,6 +74,19 @@ async def lista_postos_da_pesquisa(id_pesquisa, db: Session = Depends(get_db)):
 @app.get("/posto/{id_posto}")
 async def lista_infos_posto(id_posto, db: Session = Depends(get_db)):
     return crud.get_dados_posto(db, id_posto)
+
+## A raiz da aplicação, mostrando a lista de todos os postos:
+@app.get("/", response_class=HTMLResponse)
+async def raiz_app(request: Request, db: Session = Depends(get_db)):
+
+    postos = await lista_todos_postos(db)
+
+    return templates.TemplateResponse(
+        request=request, name="index.html", context={"postos": postos} 
+    )
+
+for route in app.router.routes:
+    print(route.name, route.path)
 
 # https://stackoverflow.com/questions/75040507/how-to-access-fastapi-backend-from-a-different-machine-ip-on-the-same-local-netw
 if __name__ == '__main__':
