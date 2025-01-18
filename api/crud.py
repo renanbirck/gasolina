@@ -14,6 +14,10 @@ def get_pesquisas(db: Session):
 def get_distribuidoras(db: Session):
     return db.query(models.Distribuidora).all()
 
+def get_precos_ultima_pesquisa(db: Session):
+    ultima_pesquisa = get_ultima_pesquisa(db)
+    return dados_pesquisa(db, ultima_pesquisa)
+
 def get_postos(db: Session):
     query = db.query(models.PostoGasolina.id, 
                  models.Distribuidora.nome,
@@ -65,7 +69,7 @@ def dados_pesquisa(db: Session, id_pesquisa: int):
     # JOIN PostosGasolina PG on P.IdPosto = PG.IdPosto
     # WHERE P.IdPesquisa = {id_pesquisa}
 
-    query = db.query(models.Pesquisa.data, models.PostoGasolina.nome, models.Precos.precoGasolinaComum, models.Precos.precoGasolinaAditivada,
+    query = db.query(models.Pesquisa.data, models.PostoGasolina.nome, models.PostoGasolina.endereco, models.PostoGasolina.bairro, models.Precos.precoGasolinaComum, models.Precos.precoGasolinaAditivada,
                      models.Precos.precoEtanol,models.Precos.precoDiesel,models.Precos.precoGNV) \
     .join(models.Pesquisa, models.Precos.pesquisa==models.Pesquisa.id) \
     .join(models.PostoGasolina, models.Precos.posto == models.PostoGasolina.id)  \
@@ -77,13 +81,16 @@ def dados_pesquisa(db: Session, id_pesquisa: int):
     print(result)
     dados_pesquisa = [
         {
-            "id": row[0],
+            "id": id_pesquisa,
+            "data": row[0],
             "nome": row[1],
-            "gasolina_comum": row[2],
-            "gasolina_aditivada": row[3],
-            "etanol": row[4],
-            "diesel": row[5],
-            "GNV": row[6]
+            "endereco": row[2],
+            "bairro": row[3],
+            "gasolina_comum": row[4],
+            "gasolina_aditivada": row[5],
+            "etanol": row[6],
+            "diesel": row[7],
+            "GNV": row[8]
         }
         for row in result
     ]

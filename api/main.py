@@ -17,9 +17,7 @@ import uvicorn
 models.Base.metadata.create_all(bind=engine)
 app = FastAPI() 
 
-router = APIRouter(
-    prefix='/postos'
-)
+router = APIRouter()
 
 app.include_router(router)
 
@@ -51,7 +49,7 @@ def get_db():
 
 templates = Jinja2Templates(directory="templates")
 
-@app.get("/ultima_pesquisa")
+@app.get("/ultima_pesquisa", name="ultima_pesquisa")
 async def ultima_pesquisa(db: Session = Depends(get_db)):
     return crud.get_ultima_pesquisa(db)
 
@@ -68,21 +66,26 @@ async def lista_todos_postos(db: Session = Depends(get_db)):
     return crud.get_postos(db)
 
 @app.get("/pesquisa/{id_pesquisa}")
-async def lista_postos_da_pesquisa(id_pesquisa, db: Session = Depends(get_db)):
+async def dados_pesquisa(id_pesquisa, db: Session = Depends(get_db)):
     return crud.dados_pesquisa(db, id_pesquisa) 
 
-@app.get("/posto/{id_posto}")
+@app.get("/posto/{id_posto}", name="posto")
 async def lista_infos_posto(id_posto, db: Session = Depends(get_db)):
     return crud.get_dados_posto(db, id_posto)
+
 
 ## A raiz da aplicação, mostrando a lista de todos os postos:
 @app.get("/", response_class=HTMLResponse)
 async def raiz_app(request: Request, db: Session = Depends(get_db)):
 
     postos = await lista_todos_postos(db)
+    data_ultima_pesquisa = await ultima_pesquisa(db)
+
+    dados_ultima_pesquisa = await dados_pesquisa(data_ultima_pesquisa.id, db)
+    print(dados_ultima_pesquisa)
 
     return templates.TemplateResponse(
-        request=request, name="index.html", context={"postos": postos} 
+        request=request, name="index.html", context={"postos": postos, "ultima_pesquisa": data_ultima_pesquisa, "dados_ultima_pesquisa": dados_ultima_pesquisa} 
     )
 
 for route in app.router.routes:
