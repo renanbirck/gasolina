@@ -40,6 +40,22 @@ def get_postos(db: Session):
     
     return postos
 
+def get_dados_posto(db: Session, id_posto: int):
+    query = db.query(models.PostoGasolina.nome, models.PostoGasolina.endereco, models.PostoGasolina.bairro).filter(models.PostoGasolina.id == id_posto)
+    result = query.all() 
+
+    dados_posto = [
+        {
+            "id": id_posto,
+            "nome": row[0],
+            "endereco": row[1],
+            "bairro": row[2],
+        }
+        for row in result
+    ]
+ 
+    return dados_posto
+
 def dados_pesquisa(db: Session, id_pesquisa: int):
     # Fornecido o ID da pesquisa, retorna todos os postos que participaram dela, com os preços.
     

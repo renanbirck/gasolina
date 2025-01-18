@@ -64,6 +64,10 @@ async def lista_todos_postos(db: Session = Depends(get_db)):
 async def lista_postos_da_pesquisa(id_pesquisa, db: Session = Depends(get_db)):
     return crud.dados_pesquisa(db, id_pesquisa) 
 
+@app.get("/posto/{id_posto}")
+async def lista_infos_posto(id_posto, db: Session = Depends(get_db)):
+    return crud.get_dados_posto(db, id_posto)
+
 # https://stackoverflow.com/questions/75040507/how-to-access-fastapi-backend-from-a-different-machine-ip-on-the-same-local-netw
 if __name__ == '__main__':
     uvicorn.run(app, host='0.0.0.0', port=8000)
