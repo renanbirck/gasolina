@@ -7,13 +7,15 @@
     <h1>Lista de Postos</h1>
     <table>
       <tr>
+        <th>ID do Posto</th>
         <th>Nome do Posto</th> 
         <th>Endereço</th>
       </tr>
         {% for posto in postos %}
         <tr>
+          <td> {{ posto.id }} </td>
           <td> {{ posto.posto_nome }} </td>
-          <td> {{ posto.endereco }}  - {{ posto.bairro }}</td>
+          <td> {{ posto.endereco }} - {{ posto.bairro }}</td>
         </tr>
         {% endfor %}
     </table>
