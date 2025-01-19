@@ -1,7 +1,7 @@
 FROM python:3.13
 
 # Estabelecer um local para rodar a aplicação
-RUN mkdir -p /app 
+RUN mkdir -p /app /app/templates 
 
 # Onde fica o BD
 RUN mkdir -p /data   
@@ -13,6 +13,7 @@ EXPOSE 8000
 # Copiar os arquivos da aplicação
 COPY api/*.py .
 COPY ../requirements.txt . 
+COPY api/templates/* templates 
 
 # Configurar o ambiente
 RUN pip install --upgrade pip 
