@@ -73,6 +73,17 @@ async def dados_pesquisa(id_pesquisa, db: Session = Depends(get_db)):
 async def lista_infos_posto(id_posto, db: Session = Depends(get_db)):
     return crud.get_dados_posto(db, id_posto)
 
+@app.get("/historico/{id_posto}", name="historico_posto", response_class=HTMLResponse)
+async def historico_posto(id_posto, request: Request, db: Session = Depends(get_db)):
+   
+    dados_posto = await lista_infos_posto(int(id_posto), db)
+    print(dados_posto)
+
+    return templates.TemplateResponse(
+            request=request, name="info_posto.html", 
+            context={"dados_posto": dados_posto[0]}
+           )
+
 ## A raiz da aplicação, mostrando a lista de todos os postos:
 @app.get("/", response_class=HTMLResponse)
 async def raiz_app(request: Request, db: Session = Depends(get_db)):
@@ -80,6 +91,7 @@ async def raiz_app(request: Request, db: Session = Depends(get_db)):
     data_ultima_pesquisa = await ultima_pesquisa(db)
     dados_ultima_pesquisa = await dados_pesquisa(data_ultima_pesquisa.id, db)
 
+    print(data_ultima_pesquisa)
     return templates.TemplateResponse(
         request=request, name="index.html", context={"ultima_pesquisa": data_ultima_pesquisa, "dados_ultima_pesquisa": dados_ultima_pesquisa} 
     )
