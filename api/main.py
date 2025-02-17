@@ -79,9 +79,13 @@ async def historico_posto(id_posto, request: Request, db: Session = Depends(get_
     dados_posto = await lista_infos_posto(int(id_posto), db)
     print(dados_posto)
 
+    dados_historico_posto = crud.historico_posto(db, int(id_posto))
+    print(dados_historico_posto)
+
     return templates.TemplateResponse(
             request=request, name="info_posto.html", 
-            context={"dados_posto": dados_posto[0]}
+            context={"dados_posto": dados_posto[0],
+                     "dados_historico_posto": dados_historico_posto}
            )
 
 ## A raiz da aplicação, mostrando a lista de todos os postos:

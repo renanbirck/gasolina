@@ -74,7 +74,7 @@ def historico_posto(db: Session, id_posto: int):
                      models.Precos.precoEtanol, \
                      models.Precos.precoDiesel, \
                      models.Precos.precoGNV).join(models.Pesquisa, 
-                                                  models.Precos.pesquisa == models.Pesquisa.id).filter(models.Posto.id == id_posto).order_by(models.Pesquisa.data)
+                                                  models.Precos.pesquisa == models.Pesquisa.id).filter(models.Precos.posto == id_posto).order_by(models.Pesquisa.data)
 
     result = query.all() 
     dados_pesquisa = [
