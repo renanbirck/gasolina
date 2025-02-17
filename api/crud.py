@@ -60,6 +60,35 @@ def get_dados_posto(db: Session, id_posto: int):
  
     return dados_posto
 
+def historico_posto(db: Session, id_posto: int):
+    # Fornecendo o ID do posto ,retorna um histórico de preços dele.
+    # SELECT P.DataPesquisa, IdPosto, PrecoGasolinaComum, PrecoGasolinaAditivada, PrecoEtanol, PrecoDiesel, PrecoGNV 
+    # FROM Precos 
+    # JOIN Pesquisas P ON P.IdPesquisa = Precos.IdPesquisa
+    # WHERE IdPosto = id_posto 
+    # ORDER BY DataPesquisa
+
+    query = db.query(models.Pesquisa.data, \
+                     models.Precos.precoGasolinaComum, \
+                     models.Precos.precoGasolinaAditivada, \
+                     models.Precos.precoEtanol, \
+                     models.Precos.precoDiesel, \
+                     models.Precos.precoGNV).join(models.Pesquisa, 
+                                                  models.Precos.pesquisa == models.Pesquisa.id).filter(models.Posto.id == id_posto).order_by(models.Pesquisa.data)
+
+    result = query.all() 
+    dados_pesquisa = [
+        { "data": row[0],
+          "gasolina_comum": row[1],
+          "gasolina_aditivada": row[2],
+          "etanol": row[3],
+          "diesel": row[4],
+          "gnv": row[5]
+        } for row in result 
+    ]
+
+    return dados_pesquisa
+
 def dados_pesquisa(db: Session, id_pesquisa: int):
     # Fornecido o ID da pesquisa, retorna todos os postos que participaram dela, com os preços.
     
