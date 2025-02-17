@@ -10,7 +10,6 @@ O _back-end_ do projeto é estruturado em:
 
 * **scraper**: faz a raspagem do site do PROCON e determina o arquivo PDF a ser baixado.
 * **parser**: processa o arquivo PDF, carregando os valores dele no banco de dados.
-* **data-explorer**: um _front-end_ simples usando a bibloteca [streamlit](https://streamlit.io), para apoio ao desenvolvimento
 * **api**: uma API utilizando o fastapi
 
 ## Requisitos
@@ -24,8 +23,9 @@ O _back-end_ do projeto é estruturado em:
 	* TODO: continuar a parte de processamento do PDF
 * Para a API:
 	* FastAPI
+* Para o front-end:
+    * não há nenhuma dependência em específico
 * TODO: ver o uso de um ORM, substituindo o uso de SQL puro.
-* TODO: definir como será feito o front-end.
 
 ## Execução
 
