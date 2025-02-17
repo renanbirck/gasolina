@@ -19,7 +19,7 @@
       </tr>
         {% for posto in dados_ultima_pesquisa %}
         <tr>
-          <td> {{ posto.id }} </td>
+          <td> <a href="/historico/{{ posto.id }}">{{ posto.id }}</a> </td>
           <td> {{ posto.nome }} </td>
           <td> {{ posto.endereco }} - {{ posto.bairro }}</td>
           <td> {{ '%.2f' % posto.gasolina_comum if posto.gasolina_comum else '---' }} </td> 
