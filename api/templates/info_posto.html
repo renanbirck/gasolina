@@ -1,0 +1,42 @@
+<html>
+  <head>
+    <title>Pesquisas de Preços de Combustíveis em Joinville/SC</title>
+  </head>
+
+  <body>
+    <h1>Dados do Posto Selecionado</h1>
+
+    <p> Posto {{ dados_posto.id }} - {{ dados_posto.nome }} </p> 
+    <p> Endereço: {{ dados_posto.endereco }} - {{ dados_posto.bairro }} </p>
+
+    <h2> Histórico de Preços do Posto </h2>
+
+    <table>
+      <tr>
+        <th>Data</th>
+        <th>Gasolina comum</th>
+        <th>Gasolina aditivada</th>
+        <th>Etanol</th>
+        <th>Diesel</th>
+        <th>GNV</th>
+      </tr>
+
+      {% for posto in dados_historico_posto %}
+      <tr>
+        <td> {{ posto.data }} </td>
+        <td> {{ '%.2f' % posto.gasolina_comum if posto.gasolina_comum else '---' }} </td> 
+        <td> {{ '%.2f' % posto.gasolina_aditivada if posto.gasolina_aditivada else '---'}} </td>
+        <td> {{ '%.2f' % posto.etanol if posto.etanol else '---'}} </td>
+        <td> {{ '%.2f' % posto.diesel if posto.diesel else '---' }} </td>
+        <td> {{ '%.2f' % posto.GNV if posto.GNV else '---' }} </td>
+      </tr>
+
+      {% endfor %}
+
+    </table> 
+
+    <footer>
+      © 2025- <a href="mailto:renan.birck.pinheiro@gmail.com">Renan Birck Pinheiro</a> - <a href="https://github.com/renanbirck/gasolina">GitHub</a>
+    </footer>
+  </body>
+</html>
