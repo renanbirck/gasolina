@@ -1,6 +1,8 @@
 from sqlalchemy.orm import Session
 from . import models # não estamos usando schemas ainda
 
+from datetime import datetime 
+
 # Arquivo com a lógica CRUD  a partir da API
 # no momento é só leitura, futuramente o scraper
 # vai atualizar pela API
@@ -78,7 +80,7 @@ def historico_posto(db: Session, id_posto: int):
 
     result = query.all() 
     dados_pesquisa = [
-        { "data": row[0],
+        { "data": datetime.strptime(row[0], "%Y%m%d").strftime("%d/%m/%Y"),
           "gasolina_comum": row[1],
           "gasolina_aditivada": row[2],
           "etanol": row[3],
@@ -110,7 +112,7 @@ def dados_pesquisa(db: Session, id_pesquisa: int):
     print(f"Retorno da query: {result}")
     dados_pesquisa = [
         {
-            "data": row[0],
+            "data": datetime.strptime(row[0], "%Y%m%d").strftime("%d/%m/%Y"),
             "id": str(row[1]),
             "nome": row[2],
             "endereco": row[3],
