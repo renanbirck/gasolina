@@ -1,4 +1,4 @@
-FROM python:3.13
+FROM python:3.13-alpine
 
 # Estabelecer um local para rodar a aplicação
 RUN mkdir -p /app /app/templates 
