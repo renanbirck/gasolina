@@ -8,14 +8,33 @@ from .database import SessionLocal, engine
 from fastapi.middleware.cors import CORSMiddleware
 
 from fastapi.templating import Jinja2Templates
-
+from fastapi.staticfiles import StaticFiles
 import uvicorn
+
+# Tratadores de exceções para erro 404 e 500
+
+async def not_found_error(request: Request, exception: HTTPException):
+     return templates.TemplateResponse(
+            request=request, name="404.html", 
+            status_code=404)
+
+async def internal_error(request: Request, exception: HTTPException):
+     return templates.TemplateResponse(
+            request=request, name="500.html", 
+            status_code=500)
+
+
+
+exception_handlers = {
+    404: not_found_error,
+    500: internal_error
+}
 
 # O arquivo principal da API.
 
 # Carregar os modelos
 models.Base.metadata.create_all(bind=engine)
-app = FastAPI() 
+app = FastAPI(exception_handlers=exception_handlers) 
 
 router = APIRouter()
 
@@ -88,6 +107,10 @@ async def historico_posto(id_posto, request: Request, db: Session = Depends(get_
                      "dados_historico_posto": dados_historico_posto}
            )
 
+
+## Para exibir imagens 
+app.mount("/images", StaticFiles(directory="templates/images"), name='images')
+
 ## A raiz da aplicação, mostrando a lista de todos os postos:
 @app.get("/", response_class=HTMLResponse)
 async def raiz_app(request: Request, db: Session = Depends(get_db)):
@@ -104,6 +127,7 @@ print("--- Rotas da aplicação ---")
 for route in app.router.routes:
     print(route.name, route.path)
 print("--------------------------")
+
 
 # https://stackoverflow.com/questions/75040507/how-to-access-fastapi-backend-from-a-different-machine-ip-on-the-same-local-netw
 if __name__ == '__main__':
