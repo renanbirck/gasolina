@@ -111,6 +111,9 @@ async def historico_posto(id_posto, request: Request, db: Session = Depends(get_
 ## Para exibir imagens 
 app.mount("/images", StaticFiles(directory="templates/images"), name='images')
 
+## Para termos um diretório com as bibliotecas
+app.mount("/libs", StaticFiles(directory="templates/libs"), name='libs')
+
 ## A raiz da aplicação, mostrando a lista de todos os postos:
 @app.get("/", response_class=HTMLResponse)
 async def raiz_app(request: Request, db: Session = Depends(get_db)):
