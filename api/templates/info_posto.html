@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Pesquisas de Preços de Combustíveis em Joinville/SC</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-  </head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    </head>
 
   <body>
     <h1 class="text-center">Dados do Posto Selecionado</h1>
@@ -21,7 +22,7 @@
       <div class="row justify-content-md-center">
         <!-- coluna da esquerda -->
         <div class="col-md-6">
-          <table class="table-responsive table container text-center">
+          <table class="table-responsive table container text-center" id="tabelaPrecos">
             <tr>
               <th>Data</th>
               <th>Gasolina comum</th>
@@ -47,6 +48,7 @@
 
         <!-- coluna da direita -->
         <div class="col-md-6">
+          <canvas id="graficoPrecos"></canvas>
           <p>Insira o gráfico aqui...</p>
         </div>
       </div>
@@ -55,5 +57,35 @@
       © 2025- <a href="mailto:renan.birck.pinheiro@gmail.com">Renan Birck Pinheiro</a> - <a href="https://github.com/renanbirck/gasolina">GitHub</a>
     </footer>
   </body>
+
+
+  <!-- Gerar gráficos, depois que a página já estiver montada-->
+
+  <script>
+  const ctx = document.getElementById('graficoPrecos');
+
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+      datasets: [{
+        label: '# of Votes',
+        data: [12, 19, 3, 5, 2, 3],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+</script>
+
+ 
+
+ 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </html>
