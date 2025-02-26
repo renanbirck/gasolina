@@ -29,14 +29,16 @@ for(currentChart = 1; currentChart < lineLabels.length; currentChart++) {
 
 
 const ctx = document.getElementById('graficoPrecos');
-new Chart(ctx, {
+chart = new Chart(ctx, {
   type: 'line',
   data: {
     labels: dateLabels,
     datasets: datasets
   },
   options: {
+    responsive: true,
     aspectRatio: 1.5,
+    maintainAspectRatio: true,
     scales: {
       y: {
         beginAtZero: false
@@ -44,4 +46,10 @@ new Chart(ctx, {
     }
   }
 });
+
+// Forçar a redimensionar quando trocar o tamanho da página 
+window.addEventListener('resize', function() {
+    chart.resize();
+});
+
 
