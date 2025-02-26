@@ -19,4 +19,3 @@ function getTableColumn(tableId, columnIndex) {
   return columnData;
 }
 
-

@@ -50,7 +50,6 @@
         <!-- coluna da direita -->
         <div class="col-md-6">
           <canvas id="graficoPrecos"></canvas>
-          <p>Insira o gráfico aqui...</p>
         </div>
       </div>
     </div>
@@ -64,27 +63,45 @@
 
   <script>
 
-  const ctx = document.getElementById('graficoPrecos');
+    // construir as linhas a serem plotadas no gráfico.  
 
-  new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-      datasets: [{
-        label: '# of Votes',
-        data: [12, 19, 3, 5, 2, 3],
-        borderWidth: 1
-      }]
-    },
-    options: {
-      scales: {
-        y: {
-          beginAtZero: true
+    // como a maioria dos postos só vende gasolinas, etanol, diesel e GNV,
+    // acho bem razoável presumir que não irá ter novas colunas. Talvez 
+    // se no futuro os postos virarem eletropostos, será necessário atualizar.
+
+    // 1. Pegar as etiquetas de cada gráfico
+    lineLabels = [...document.querySelectorAll("#tabelaPrecos th")].map((header) => header.innerHTML);
+    console.log(lineLabels)
+
+    // 2. Pegar as datas 
+
+    dateLabels = getTableColumn("tabelaPrecos", 0).slice(1).map((dateLabel) => dateLabel.trim()); 
+    console.log(dateLabels)
+
+    // 3. Construir o array com os datasets 
+    
+
+
+    const ctx = document.getElementById('graficoPrecos');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: dateLabels,
+        datasets: [{
+          label: '# of Votes',
+          data: [12, 19, 3, 5, 2, 3],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
         }
       }
-    }
-  });
-</script>
+    });
+  </script>
 
  
 
