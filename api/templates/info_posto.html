@@ -8,38 +8,49 @@
   </head>
 
   <body>
-    <h1 class="container text-center">Dados do Posto Selecionado</h1>
+    <h1 class="text-center">Dados do Posto Selecionado</h1>
 
     <p class="container text-muted"> Posto {{ dados_posto.id }} - {{ dados_posto.nome }} </p> 
     <p class="container text-muted"> Endereço: <a href="http://www.google.com/maps?q={{ dados_posto.endereco | replace(".", "") }}-Joinville">{{ dados_posto.endereco }}</a> - {{ dados_posto.bairro }} </p>
 
 
-    <h2 class="container text-center"> Histórico de Preços do Posto </h2>
+    <h2 class="text-center">Histórico de Preços do Posto </h2>
 
-    <table class="table-responsive table container text-center">
-      <tr>
-        <th>Data</th>
-        <th>Gasolina comum</th>
-        <th>Gasolina aditivada</th>
-        <th>Etanol</th>
-        <th>Diesel</th>
-        <th>GNV</th>
-      </tr>
+    <div class="container-fluid text-center">
 
-      {% for posto in dados_historico_posto %}
-      <tr>
-        <td> {{ posto.data }} </td>
-        <td> {{ '%.2f' % posto.gasolina_comum if posto.gasolina_comum else '---' }} </td> 
-        <td> {{ '%.2f' % posto.gasolina_aditivada if posto.gasolina_aditivada else '---'}} </td>
-        <td> {{ '%.2f' % posto.etanol if posto.etanol else '---'}} </td>
-        <td> {{ '%.2f' % posto.diesel if posto.diesel else '---' }} </td>
-        <td> {{ '%.2f' % posto.GNV if posto.GNV else '---' }} </td>
-      </tr>
+      <div class="row justify-content-md-center">
+        <!-- coluna da esquerda -->
+        <div class="col-md-6">
+          <table class="table-responsive table container text-center">
+            <tr>
+              <th>Data</th>
+              <th>Gasolina comum</th>
+              <th>Gasolina aditivada</th>
+              <th>Etanol</th>
+              <th>Diesel</th>
+              <th>GNV</th>
+            </tr>
 
-      {% endfor %}
+            {% for posto in dados_historico_posto %}
+            <tr>
+              <td> {{ posto.data }} </td>
+              <td> {{ '%.2f' % posto.gasolina_comum if posto.gasolina_comum else '---' }} </td>
+              <td> {{ '%.2f' % posto.gasolina_aditivada if posto.gasolina_aditivada else '---'}} </td>
+              <td> {{ '%.2f' % posto.etanol if posto.etanol else '---'}} </td>
+              <td> {{ '%.2f' % posto.diesel if posto.diesel else '---' }} </td>
+              <td> {{ '%.2f' % posto.GNV if posto.GNV else '---' }} </td>
+            </tr>
+            {% endfor %}
 
-    </table> 
+          </table>
+        </div>
 
+        <!-- coluna da direita -->
+        <div class="col-md-6">
+          <p>Insira o gráfico aqui...</p>
+        </div>
+      </div>
+    </div>
     <footer>
       © 2025- <a href="mailto:renan.birck.pinheiro@gmail.com">Renan Birck Pinheiro</a> - <a href="https://github.com/renanbirck/gasolina">GitHub</a>
     </footer>
