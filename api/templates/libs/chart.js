@@ -36,6 +36,7 @@ new Chart(ctx, {
     datasets: datasets
   },
   options: {
+    aspectRatio: 1.5,
     scales: {
       y: {
         beginAtZero: false

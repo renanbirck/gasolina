@@ -15,8 +15,10 @@ REMOTE_MACHINE=renanbirck.rocks
 REMOTE_MACHINE_DATAPATH=/home/renan/gasolina/data
 DATABASE_FILE_NAME=pesquisas.db 
 
+TARGET_PORT=2222
+
 ## Adicionar o remoto 
-podman system connection add BLOG $REMOTE_LOGIN@$REMOTE_MACHINE:22/usr/lib/systemd/user/podman.socket
+podman system connection add BLOG $REMOTE_LOGIN@$REMOTE_MACHINE:$TARGET_PORT/usr/lib/systemd/user/podman.socket
 
 ## Reconstruir a imagem para fazermos o deploy. 
 podman build -t $API_TARGET -f $API_DOCKERFILE .
@@ -27,11 +29,11 @@ cowsay Terminei a Cópia
 
 ## Na máquina remota, reiniciar o container que acabamos de copiar.
 
-if ! ssh $REMOTE_LOGIN@$REMOTE_MACHINE "test -e $REMOTE_MACHINE_DATAPATH/$DATABASE_FILE_NAME"; then
+if ! ssh -p $TARGET_PORT $REMOTE_LOGIN@$REMOTE_MACHINE "test -e $REMOTE_MACHINE_DATAPATH/$DATABASE_FILE_NAME"; then
   echo "O arquivo do BD não existe na máquina remota! Vou copiar ele da nossa máquina."
-  scp data/$DATABASE_FILE_NAME $REMOTE_LOGIN@$REMOTE_MACHINE:$REMOTE_MACHINE_DATAPATH
+  scp -P $TARGET_PORT data/$DATABASE_FILE_NAME $REMOTE_LOGIN@$REMOTE_MACHINE:$REMOTE_MACHINE_DATAPATH
 fi
 
-ssh $REMOTE_LOGIN@$REMOTE_MACHINE "podman run -dt -v $REMOTE_MACHINE_DATAPATH:/data:Z --name $API_TARGET -p 8000:8000 --replace $API_TARGET"
+ssh -p $TARGET_PORT $REMOTE_LOGIN@$REMOTE_MACHINE "podman run -dt -v $REMOTE_MACHINE_DATAPATH:/data:Z --name $API_TARGET -p 8000:8000 --replace $API_TARGET"
 
 echo FIM.
