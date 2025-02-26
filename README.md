@@ -38,13 +38,14 @@ O _back-end_ do projeto é estruturado em:
 * Para rodar o _parser_:
 	* No diretório `parser`, rodar o _script_ `run_parser.sh`, fornecendo um arquivo adequado como parâmetro.
 
-* Para rodar a _api_:
+* Para rodar a _api_ durante o desenvolvimento:
     * No diretório `api`, rodar `fastapi dev main.py` para o modo de desenvolvedor.
 
 ## Deploy 
 
 Primeiramente, é preciso construir o _container_: `podman build -t gasolina-api -f api/Dockerfile .`.
-Para facilitar o _deploy_, adicionei a máquina remota no `podman system connection add REMOTE [ENDEREÇO DA MÁQUINA]:22/usr/lib/systemd/user/podman.socket` e, então, basta executar o comando `podman image scp gasolina-api:latest REMOTE::`.
+
+Para facilitar o _deploy_, adicionei a máquina remota no `podman system connection add REMOTE [ENDEREÇO DA MÁQUINA]:22/usr/lib/systemd/user/podman.socket` e, então, basta executar o comando `podman image scp gasolina-api:latest REMOTE::`. É preciso que o acesso via `ssh` esteja sendo feito por chave e não por senha.
 
 Em seguida, na máquina remota, é preciso executar o comando `podman run -dt -v [LOCAL ONDE FICA O BD]:/data:Z --name gasolina-api -p 8000:8000 --replace gasolina-api` para subir o servidor. 
 
@@ -54,7 +55,7 @@ Um mínimo exemplo de configuração do _nginx_ é:
 
     server {
 
-            server_name gasolina.renanbirck.rocks;
+            server_name [URL DA APLICAÇÃO];
 
             listen 80;
             listen [::]:80;
@@ -66,17 +67,24 @@ Um mínimo exemplo de configuração do _nginx_ é:
 
     }
 
-sendo preciso, também, gerar um certificado (se estivermos usando o Let's Encrypt, por exemplo) e configurar o nginx corretamente.
+sendo preciso, também, gerar um certificado (se estivermos usando o _Let's Encrypt_, por exemplo) e configurar o nginx corretamente. Não vou entrar em detalhes aqui, porque cada configuração do _nginx_ será diferente.
 
 ## Coisas a fazer:
+
+### Scraper e parser:
 * A estrutura dos PDFs mudou conforme o tempo, então preciso ver como fazer. Provavelmente vou fazer _data wrangling_ na mão e fornecer um CSV.
 * Verificar se vale a pena fazer a raspagem de forma assíncrona/paralela (acredito que não).
+ Automatizar o _deploy_.
+* Fazer a raspagem comunicar via API em vez de chamadas SQL diretamente no BD.
+
+### API:
+* Atualmente, a imagem está muito grande. Ver se eu consigo reduzir o tamanho dela.
 * Integrar os testes com o _container_.
 * Configurar Actions para rodar os testes automaticamente.
-* Automatizar o _deploy_.
-* Fazer a raspagem comunicar via API em vez de chamadas SQL diretamente no BD.
+
+### Front-end: 
+* Integração com o Google Maps ou OpenStreetMap. 
 * Usar TypeScript e algum framework, como React ou vue, no front-end.
-* Atualmente, a imagem está muito grande. Ver se eu consigo reduzir o tamanho dela.
 
 ## Problemas encontrados
 
