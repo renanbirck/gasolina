@@ -113,6 +113,7 @@ app.mount("/images", StaticFiles(directory="templates/images"), name='images')
 
 ## Para termos um diretório com as bibliotecas
 app.mount("/libs", StaticFiles(directory="templates/libs"), name='libs')
+app.mount("/style", StaticFiles(directory="templates/style"), name='style')
 
 ## A raiz da aplicação, mostrando a lista de todos os postos:
 @app.get("/", response_class=HTMLResponse)
