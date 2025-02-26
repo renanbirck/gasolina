@@ -79,7 +79,18 @@
     console.log(dateLabels)
 
     // 3. Construir o array com os datasets 
-    
+
+    datasets = [];
+
+    for(currentChart = 1; currentChart < lineLabels.length; currentChart++) {
+      currentDataset = {
+        label: lineLabels[currentChart],
+        data: getTableColumn("tabelaPrecos", currentChart).slice(1).map((value) => parseFloat(value)),
+        borderWidth: 1
+      }
+
+      datasets.push(currentDataset);
+    }
 
 
     const ctx = document.getElementById('graficoPrecos');
@@ -87,16 +98,12 @@
       type: 'line',
       data: {
         labels: dateLabels,
-        datasets: [{
-          label: '# of Votes',
-          data: [12, 19, 3, 5, 2, 3],
-          borderWidth: 1
-        }]
+        datasets: datasets
       },
       options: {
         scales: {
           y: {
-            beginAtZero: true
+            beginAtZero: false
           }
         }
       }
