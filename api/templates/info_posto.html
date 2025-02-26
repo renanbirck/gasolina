@@ -5,44 +5,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Pesquisas de Preços de Combustíveis em Joinville/SC</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-  </head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/libs/tools.js"></script>
+    </head>
 
   <body>
-    <h1 class="container text-center">Dados do Posto Selecionado</h1>
+    <h1 class="text-center">Dados do Posto Selecionado</h1>
 
     <p class="container text-muted"> Posto {{ dados_posto.id }} - {{ dados_posto.nome }} </p> 
     <p class="container text-muted"> Endereço: <a href="http://www.google.com/maps?q={{ dados_posto.endereco | replace(".", "") }}-Joinville">{{ dados_posto.endereco }}</a> - {{ dados_posto.bairro }} </p>
 
 
-    <h2 class="container text-center"> Histórico de Preços do Posto </h2>
+    <h2 class="text-center">Histórico de Preços do Posto </h2>
 
-    <table class="table-responsive table container text-center">
-      <tr>
-        <th>Data</th>
-        <th>Gasolina comum</th>
-        <th>Gasolina aditivada</th>
-        <th>Etanol</th>
-        <th>Diesel</th>
-        <th>GNV</th>
-      </tr>
+    <div class="container-fluid text-center">
 
-      {% for posto in dados_historico_posto %}
-      <tr>
-        <td> {{ posto.data }} </td>
-        <td> {{ '%.2f' % posto.gasolina_comum if posto.gasolina_comum else '---' }} </td> 
-        <td> {{ '%.2f' % posto.gasolina_aditivada if posto.gasolina_aditivada else '---'}} </td>
-        <td> {{ '%.2f' % posto.etanol if posto.etanol else '---'}} </td>
-        <td> {{ '%.2f' % posto.diesel if posto.diesel else '---' }} </td>
-        <td> {{ '%.2f' % posto.GNV if posto.GNV else '---' }} </td>
-      </tr>
+      <div class="row justify-content-md-center">
+        <!-- coluna da esquerda -->
+        <div class="col-md-6">
+          <table class="table-responsive table container text-center" id="tabelaPrecos">
+            <tr>
+              <th>Data</th>
+              <th>Gasolina comum</th>
+              <th>Gasolina aditivada</th>
+              <th>Etanol</th>
+              <th>Diesel</th>
+              <th>GNV</th>
+            </tr>
 
-      {% endfor %}
+            {% for posto in dados_historico_posto %}
+            <tr>
+              <td> {{ posto.data }} </td>
+              <td> {{ '%.2f' % posto.gasolina_comum if posto.gasolina_comum else '---' }} </td>
+              <td> {{ '%.2f' % posto.gasolina_aditivada if posto.gasolina_aditivada else '---'}} </td>
+              <td> {{ '%.2f' % posto.etanol if posto.etanol else '---'}} </td>
+              <td> {{ '%.2f' % posto.diesel if posto.diesel else '---' }} </td>
+              <td> {{ '%.2f' % posto.GNV if posto.GNV else '---' }} </td>
+            </tr>
+            {% endfor %}
 
-    </table> 
+          </table>
+        </div>
 
+        <!-- coluna da direita -->
+        <div class="col-md-6">
+          <canvas id="graficoPrecos"></canvas>
+        </div>
+      </div>
+    </div>
     <footer>
       © 2025- <a href="mailto:renan.birck.pinheiro@gmail.com">Renan Birck Pinheiro</a> - <a href="https://github.com/renanbirck/gasolina">GitHub</a>
     </footer>
   </body>
+ 
+  <script src="/libs/chart.js" />
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </html>
