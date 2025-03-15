@@ -45,9 +45,9 @@ O _back-end_ do projeto é estruturado em:
 
 Primeiramente, é preciso construir o _container_: `podman build -t gasolina-api -f api/Dockerfile .`.
 
-Para facilitar o _deploy_, adicionei a máquina remota no `podman system connection add REMOTE [ENDEREÇO DA MÁQUINA]:22/usr/lib/systemd/user/podman.socket` e, então, basta executar o comando `podman image scp gasolina-api:latest REMOTE::`. É preciso que o acesso via `ssh` esteja sendo feito por chave e não por senha.
+Para facilitar o _deploy_, adicionei a máquina remota no `podman system connection add REMOTE [ENDEREÇO DA MÁQUINA]:22/usr/lib/systemd/user/podman.socket` e, então, basta executar o comando `podman image scp gasolina-api:latest REMOTE::`. É preciso que o acesso via `ssh` a essa máquina remota esteja sendo feito por chave e não por senha.
 
-Em seguida, na máquina remota, é preciso executar o comando `podman run -dt -v [LOCAL ONDE FICA O BD]:/data:Z --name gasolina-api -p 8000:8000 --replace gasolina-api` para subir o servidor. 
+Em seguida, na máquina remota, é preciso executar o comando `podman run -dt -v [LOCAL ONDE FICA O BD]:/data:Z --name gasolina-api -p 8000:8000 --replace gasolina-api` para subir o servidor. O local onde fica o BD deve ser configurado conforme o servidor.  
 
 No servidor já deverá existir um proxy reverso, como o Apache ou o nginx, operacional. Ele irá receber as requisições na porta 80 e encaminhar para a porta 8000. 
 
@@ -71,6 +71,7 @@ sendo preciso, também, gerar um certificado (se estivermos usando o _Let's Encr
 
 ## Coisas a fazer:
 
+(em nenhuma ordem)
 ### Scraper e parser:
 * A estrutura dos PDFs mudou conforme o tempo, então preciso ver como fazer. Provavelmente vou fazer _data wrangling_ na mão e fornecer um CSV.
 * Verificar se vale a pena fazer a raspagem de forma assíncrona/paralela (acredito que não).
@@ -80,7 +81,7 @@ sendo preciso, também, gerar um certificado (se estivermos usando o _Let's Encr
 ### API:
 * Atualmente, a imagem está muito grande. Ver se eu consigo reduzir o tamanho dela.
 * Integrar os testes com o _container_.
-* Configurar Actions para rodar os testes automaticamente.
+* Configurar Actions para rodar os testes e fazer o _deploy_ automaticamente.
 
 ### Front-end: 
 * Integração com o Google Maps ou OpenStreetMap. 

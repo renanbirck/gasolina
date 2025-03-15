@@ -101,11 +101,18 @@ async def historico_posto(id_posto, request: Request, db: Session = Depends(get_
     dados_historico_posto = crud.historico_posto(db, int(id_posto))
     print(dados_historico_posto)
 
-    return templates.TemplateResponse(
-            request=request, name="info_posto.html", 
-            context={"dados_posto": dados_posto[0],
-                     "dados_historico_posto": dados_historico_posto}
-           )
+    try:
+        return templates.TemplateResponse(
+                request=request, name="info_posto.html", 
+                context={"dados_posto": dados_posto[0],
+                         "dados_historico_posto": dados_historico_posto}
+            )
+    except:
+      return templates.TemplateResponse(
+            request=request, name="404.html", 
+            status_code=404)
+
+       
 
 
 ## Para exibir imagens 
