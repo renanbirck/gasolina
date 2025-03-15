@@ -31,7 +31,7 @@ cowsay Terminei a Cópia
 
 if ! ssh -p $TARGET_PORT $REMOTE_LOGIN@$REMOTE_MACHINE "test -e $REMOTE_MACHINE_DATAPATH/$DATABASE_FILE_NAME"; then
   echo "O arquivo do BD não existe na máquina remota! Vou copiar ele da nossa máquina."
-  scp -P $TARGET_PORT data/$DATABASE_FILE_NAME $REMOTE_LOGIN@$REMOTE_MACHINE:$REMOTE_MACHINE_DATAPATH
+  scp -p -P $TARGET_PORT data/$DATABASE_FILE_NAME $REMOTE_LOGIN@$REMOTE_MACHINE:$REMOTE_MACHINE_DATAPATH
 fi
 
 ssh -p $TARGET_PORT $REMOTE_LOGIN@$REMOTE_MACHINE "podman run -dt -v $REMOTE_MACHINE_DATAPATH:/data:Z --name $API_TARGET -p 8000:8000 --replace $API_TARGET"
