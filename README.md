@@ -69,6 +69,24 @@ Um mínimo exemplo de configuração do _nginx_ é:
 
 sendo preciso, também, gerar um certificado (se estivermos usando o _Let's Encrypt_, por exemplo) e configurar o nginx corretamente. Não vou entrar em detalhes aqui, porque cada configuração do _nginx_ será diferente.
 
+Para gerenciar a execução do _container_, temos duas opções:
+
+* A forma "manual", usando o `podman run`, como visto acima. Normalmente é usável em desenvolvimento.
+* Escrever um arquivo `.container`, para uso com [quadlet](https://www.redhat.com/en/blog/quadlet-podman), o equivalente ao Docker Compose no podman. Isso pode ser obtido criando-se um arquivo `gasolina.container` no diretório _home_ do usuário sob o qual a aplicação irá executar, cujo conteúdo poderá ser, minimamente:
+
+    [Container]
+    Image=localhost/gasolina-api:latest
+    AutoUpdate=registry
+    PublishPort=8000:8000
+    Network=host
+    Volume=/home/renan/gasolina/data:/data:Z
+
+    [Service]
+    Restart=always
+
+    [Install]
+    WantedBy=default.target
+
 ## Coisas a fazer:
 
 (em nenhuma ordem)
