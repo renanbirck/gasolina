@@ -26,7 +26,8 @@ def mini_date_parser(date):
     
     numero_mes = meses.index(mes)
 
-    return f"{dia}/{('0' if numero_mes < 10 else '') + str(numero_mes)}/{ano}"
+    return f"{ano}{'0' if numero_mes < 10 else ''}{str(numero_mes)}{dia}"
+    #return f"{dia}/{('0' if numero_mes < 10 else '') + str(numero_mes)}/{ano}"
 
 def separa_partes(linha):
     print(f">>> {linha}")
