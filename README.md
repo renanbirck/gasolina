@@ -74,6 +74,7 @@ Para gerenciar a execução do _container_, temos duas opções:
 * A forma "manual", usando o `podman run`, como visto acima. Normalmente é usável em desenvolvimento.
 * Escrever um arquivo `.container`, para uso com [quadlet](https://www.redhat.com/en/blog/quadlet-podman), o equivalente ao Docker Compose no podman. Isso pode ser obtido criando-se um arquivo `gasolina.container` no diretório _home_ do usuário sob o qual a aplicação irá executar, cujo conteúdo poderá ser, minimamente:
 
+    ```
     [Container]
     Image=localhost/gasolina-api:latest
     AutoUpdate=registry
@@ -86,6 +87,7 @@ Para gerenciar a execução do _container_, temos duas opções:
 
     [Install]
     WantedBy=default.target
+    ```
 
 ## Coisas a fazer:
 
