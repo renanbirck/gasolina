@@ -89,6 +89,8 @@ Para gerenciar a execução do _container_, temos duas opções:
     WantedBy=default.target
     ```
 
+Novamente, as configurações irão variar conforme o caso de uso.
+
 ## Coisas a fazer:
 
 (em nenhuma ordem)
@@ -97,18 +99,20 @@ Para gerenciar a execução do _container_, temos duas opções:
 * Verificar se vale a pena fazer a raspagem de forma assíncrona/paralela (acredito que não).
  Automatizar o _deploy_.
 * Fazer a raspagem comunicar via API em vez de chamadas SQL diretamente no BD.
+* Elaborar uma forma de, do zero, criar uma carga inicial de dados (talvez usando os PDFs de 2023 a 2025) e construir o BD sem precisar fornecer um binário no repositório.
 
 ### API:
 * Atualmente, a imagem está muito grande. Ver se eu consigo reduzir o tamanho dela.
 * Integrar os testes com o _container_.
 * Configurar Actions para rodar os testes e fazer o _deploy_ automaticamente.
+* Fazer com que seja possível usar outro BD no back-end.
 
 ### Front-end: 
 * Integração com o Google Maps ou OpenStreetMap. 
 * Usar TypeScript e algum framework, como React ou vue, no front-end.
+* Mais análises (preço médio, máximo, mínimo, etc...).
 
 ## Problemas encontrados
-
 * A tabela fornecida pela prefeitura é inconsistente, com postos repetidos ou que mudaram de nome. Isso irá influenciar na estrutura do BD. 
 
 ## Licença
