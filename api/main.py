@@ -23,8 +23,6 @@ async def internal_error(request: Request, exception: HTTPException):
             request=request, name="500.html", 
             status_code=500)
 
-
-
 exception_handlers = {
     404: not_found_error,
     500: internal_error
