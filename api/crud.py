@@ -143,8 +143,12 @@ def dados_pesquisa(db: Session, id_pesquisa: int):
 ### Escrita
 
 def adiciona_nova_pesquisa(db: Session, data_pesquisa: str):
-    Pesquisa = models.Pesquisa(data = data_pesquisa)
-    db.add(Pesquisa)
-    pass
+    pesquisa = models.Pesquisa(data = data_pesquisa)
+
+    db.add(pesquisa)
+    db.commit()
+    db.refresh(pesquisa)
+    return pesquisa
+
 
 ### FIM.
