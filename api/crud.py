@@ -4,9 +4,9 @@ from . import models # não estamos usando schemas ainda
 from datetime import datetime 
 
 # Arquivo com a lógica CRUD  a partir da API
-# no momento é só leitura, futuramente o scraper
-# vai atualizar pela API
+# no momento é só leitura, futuramente o scraper vai atualizar pela API
 
+### Leitura
 def get_ultima_pesquisa(db: Session):
     return db.query(models.Pesquisa).order_by(models.Pesquisa.id.desc()).first()
 
@@ -139,3 +139,12 @@ def dados_pesquisa(db: Session, id_pesquisa: int):
     ]
 
     return dados_pesquisa
+
+### Escrita
+
+def adiciona_nova_pesquisa(db: Session, data_pesquisa: str):
+    Pesquisa = models.Pesquisa(data = data_pesquisa)
+    db.add(Pesquisa)
+    pass
+
+### FIM.
