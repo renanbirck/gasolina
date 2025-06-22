@@ -18,14 +18,14 @@ logging.basicConfig(level=logging.INFO) # O nível de logging é INFO.
 # Tratadores de exceções para erro 404 e 500
 
 async def not_found_error(request: Request, exception: HTTPException):
-     return templates.TemplateResponse(
-            request=request, name="404.html", 
-            status_code=404)
+    return templates.TemplateResponse(request=request,
+                                      name="404.html",
+                                      status_code=404)
 
 async def internal_error(request: Request, exception: HTTPException):
-     return templates.TemplateResponse(
-            request=request, name="500.html", 
-            status_code=500)
+    return templates.TemplateResponse(request=request,
+                                      name="500.html",
+                                      status_code=500)
 
 exception_handlers = {
     404: not_found_error,
@@ -36,7 +36,7 @@ exception_handlers = {
 
 # Carregar os modelos
 models.Base.metadata.create_all(bind=engine)
-app = FastAPI(exception_handlers=exception_handlers) 
+app = FastAPI(exception_handlers=exception_handlers)
 
 router = APIRouter()
 
@@ -88,7 +88,7 @@ async def lista_todos_postos(db: Session = Depends(get_db)):
 
 @app.get("/pesquisa/{id_pesquisa}")
 async def dados_pesquisa(id_pesquisa, db: Session = Depends(get_db)):
-    return crud.dados_pesquisa(db, id_pesquisa) 
+    return crud.dados_pesquisa(db, id_pesquisa)
 
 @app.get("/posto/{id_posto}", name="posto")
 async def lista_infos_posto(id_posto, db: Session = Depends(get_db)):
@@ -96,23 +96,23 @@ async def lista_infos_posto(id_posto, db: Session = Depends(get_db)):
 
 @app.get("/historico/{id_posto}", name="historico_posto", response_class=HTMLResponse)
 async def historico_posto(id_posto, request: Request, db: Session = Depends(get_db)):
-   
+
     try:
-       dados_posto = await lista_infos_posto(int(id_posto), db)
-       print(dados_posto)
+        dados_posto = await lista_infos_posto(int(id_posto), db)
+        print(dados_posto)
 
-       dados_historico_posto = crud.historico_posto(db, int(id_posto))
-       print(dados_historico_posto)
+        dados_historico_posto = crud.historico_posto(db, int(id_posto))
+        print(dados_historico_posto)
 
-       return templates.TemplateResponse(
-                request=request, name="info_posto.html", 
-                context={"dados_posto": dados_posto[0],
-                         "dados_historico_posto": dados_historico_posto}
-                )
+        return templates.TemplateResponse(
+               request=request, name="info_posto.html",
+               context={"dados_posto": dados_posto[0],
+                        "dados_historico_posto": dados_historico_posto}
+               )
     except:  # O posto não existe
-      return templates.TemplateResponse(
-            request=request, name="404.html", 
-            status_code=404)
+        return templates.TemplateResponse(request=request,
+                                          name="404.html",
+                                          status_code=404)
 
 
 @app.post("/pesquisa/nova")
@@ -130,7 +130,7 @@ async def cria_nova_pesquisa(pesquisa: models.PesquisaModel,
     except IntegrityError as e:
         logging.error(f'Erro ao adicionar pesquisa nova! {str(e)}')
         if "UNIQUE constraint failed" in str(e):
-            logging.error(f'Já existe uma pesquisa para essa data.')
+            logging.error('Já existe uma pesquisa para essa data.')
             return JSONResponse(status_code=422,
                                 content=jsonable_encoder({
                                     "code": 422,
@@ -138,10 +138,10 @@ async def cria_nova_pesquisa(pesquisa: models.PesquisaModel,
                                 )
 
 ####### Configurações
-## Para exibir imagens 
+## Para exibir imagens a partir do diretório templates/images.
 app.mount("/images", StaticFiles(directory="templates/images"), name='images')
 
-## Para termos um diretório com as bibliotecas
+## Para termos um diretório com as bibliotecas.
 app.mount("/libs", StaticFiles(directory="templates/libs"), name='libs')
 app.mount("/style", StaticFiles(directory="templates/style"), name='style')
 
@@ -155,7 +155,9 @@ async def raiz_app(request: Request, db: Session = Depends(get_db)):
 
     print(data_ultima_pesquisa)
     return templates.TemplateResponse(
-        request=request, name="index.html", context={"ultima_pesquisa": data_ultima_pesquisa, "dados_ultima_pesquisa": dados_ultima_pesquisa} 
+        request=request, name="index.html",
+        context={"ultima_pesquisa": data_ultima_pesquisa,
+                 "dados_ultima_pesquisa": dados_ultima_pesquisa}
     )
 
 print("--- Rotas da aplicação ---")

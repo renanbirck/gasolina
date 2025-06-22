@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from . import models # não estamos usando schemas ainda
 
-from datetime import datetime 
+from datetime import datetime
 
 # Arquivo com a lógica CRUD  a partir da API
 # no momento é só leitura, futuramente o scraper vai atualizar pela API
@@ -21,18 +21,19 @@ def get_precos_ultima_pesquisa(db: Session):
     return dados_pesquisa(db, ultima_pesquisa)
 
 def get_postos(db: Session):
-    query = db.query(models.PostoGasolina.id, 
+    query = db.query(models.PostoGasolina.id,
                  models.Distribuidora.nome,
-                 models.PostoGasolina.nome, 
-                 models.PostoGasolina.endereco, 
-                 models.PostoGasolina.bairro).join(models.Distribuidora, models.PostoGasolina.distribuidora == models.Distribuidora.id)
-    
+                 models.PostoGasolina.nome,
+                 models.PostoGasolina.endereco,
+                 models.PostoGasolina.bairro).join(models.Distribuidora,
+                                                   models.PostoGasolina.distribuidora == models.Distribuidora.id)
+
     result = query.all()
-    
+
     # XXX: pedi ajuda para o ChatGPT aqui, ver se tem como fazer de forma mais elegante
     # O que o FastAPI precisa é de uma lista de dicionários, e a query retornou
-    # uma lista de tuplas. 
-    
+    # uma lista de tuplas.
+
     postos = [
         {
             "id": row[0],
@@ -43,12 +44,15 @@ def get_postos(db: Session):
         }
         for row in result
     ]
-    
+
     return postos
 
 def get_dados_posto(db: Session, id_posto: int):
-    query = db.query(models.PostoGasolina.nome, models.PostoGasolina.endereco, models.PostoGasolina.bairro).filter(models.PostoGasolina.id == id_posto)
-    result = query.all() 
+    query = db.query(models.PostoGasolina.nome,
+                     models.PostoGasolina.endereco,
+                     models.PostoGasolina.bairro).filter(models.PostoGasolina.id == id_posto)
+
+    result = query.all()
 
     dados_posto = [
         {
@@ -59,15 +63,15 @@ def get_dados_posto(db: Session, id_posto: int):
         }
         for row in result
     ]
- 
+
     return dados_posto
 
 def historico_posto(db: Session, id_posto: int):
     # Fornecendo o ID do posto ,retorna um histórico de preços dele.
-    # SELECT P.DataPesquisa, IdPosto, PrecoGasolinaComum, PrecoGasolinaAditivada, PrecoEtanol, PrecoDiesel, PrecoGNV 
-    # FROM Precos 
+    # SELECT P.DataPesquisa, IdPosto, PrecoGasolinaComum, PrecoGasolinaAditivada,
+    # PrecoEtanol, PrecoDiesel, PrecoGNV FROM Precos
     # JOIN Pesquisas P ON P.IdPesquisa = Precos.IdPesquisa
-    # WHERE IdPosto = id_posto 
+    # WHERE IdPosto = id_posto
     # ORDER BY DataPesquisa
 
     query = db.query(models.Pesquisa.data, \
@@ -79,8 +83,8 @@ def historico_posto(db: Session, id_posto: int):
                      models.Precos.precoGNV).join(models.Pesquisa, 
                                                   models.Precos.pesquisa == models.Pesquisa.id).filter(models.Precos.posto == id_posto).order_by(models.Pesquisa.data)
 
-    result = query.all() 
-    dados_pesquisa = [
+    result = query.all()
+    dados_historicos = [
         { "data": datetime.strptime(row[0], "%Y%m%d").strftime("%d/%m/%Y"),
           "gasolina_comum": row[1],
           "gasolina_aditivada": row[2],
@@ -91,14 +95,15 @@ def historico_posto(db: Session, id_posto: int):
         } for row in result 
     ]
 
-    return dados_pesquisa
+    return dados_historicos
 
 def dados_pesquisa(db: Session, id_pesquisa: int):
     # Fornecido o ID da pesquisa, retorna todos os postos que participaram dela, com os preços.
-    
+
     # EM SQL puro:
-    # SELECT DataPesquisa, IdPosto, NomePosto, PrecoGasolinaComum, PrecoGasolinaAditivada, PrecoEtanol, PrecoDiesel, PrecoGNV FROM Precos P 
-    # JOIN Pesquisas Pe ON P.IdPesquisa = Pe.IdPesquisa 
+    # SELECT DataPesquisa, IdPosto, NomePosto, PrecoGasolinaComum, PrecoGasolinaAditivada,
+    # PrecoEtanol, PrecoDiesel, PrecoGNV FROM Precos P
+    # JOIN Pesquisas Pe ON P.IdPesquisa = Pe.IdPesquisa
     # JOIN PostosGasolina PG on P.IdPosto = PG.IdPosto
     # WHERE P.IdPesquisa = {id_pesquisa}
 
@@ -117,11 +122,9 @@ def dados_pesquisa(db: Session, id_pesquisa: int):
     .join(models.PostoGasolina, models.Precos.posto == models.PostoGasolina.id)  \
     .filter(models.Precos.pesquisa == id_pesquisa)
     
-
     result = query.all()
 
-    print(f"Retorno da query: {result}")
-    dados_pesquisa = [
+    postos = [
         {
             "data": datetime.strptime(row[0], "%Y%m%d").strftime("%d/%m/%Y"),
             "id": str(row[1]),
@@ -138,11 +141,14 @@ def dados_pesquisa(db: Session, id_pesquisa: int):
         for row in result
     ]
 
-    return dados_pesquisa
+    return postos
 
 ### Escrita
 
 def adiciona_nova_pesquisa(db: Session, data_pesquisa: str):
+    """ Cria uma linha na tabela Pesquisas para uma nova pesquisa,
+        retornando um objeto com ID e data da pesquisa adicionada. """
+
     pesquisa = models.Pesquisa(data = data_pesquisa)
 
     db.add(pesquisa)
