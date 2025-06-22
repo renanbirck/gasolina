@@ -9,7 +9,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-import uvicorn
+import uvicorn, logging
+
+logging.basicConfig(level=logging.INFO) # O nível de logging é INFO.
 
 # Tratadores de exceções para erro 404 e 500
 
@@ -110,8 +112,11 @@ async def historico_posto(id_posto, request: Request, db: Session = Depends(get_
             request=request, name="404.html", 
             status_code=404)
 
-       
 
+@app.post("/pesquisa/nova")
+async def cria_nova_pesquisa(pesquisa: models.PesquisaModel,
+                             db: Session = Depends(get_db)):
+    print(f'Criando nova pesquisa para o dia {pesquisa.data}!')
 
 ## Para exibir imagens 
 app.mount("/images", StaticFiles(directory="templates/images"), name='images')
@@ -141,3 +146,5 @@ print("--------------------------")
 # https://stackoverflow.com/questions/75040507/how-to-access-fastapi-backend-from-a-different-machine-ip-on-the-same-local-netw
 if __name__ == '__main__':
     uvicorn.run(app, host='0.0.0.0', port=8000)
+
+# FIM.

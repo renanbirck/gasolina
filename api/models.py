@@ -1,6 +1,11 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Numeric
 from sqlalchemy.orm import relationship
 from .database import Base # Os modelos herdam de Base
+from pydantic import BaseModel
+
+class PesquisaModel(BaseModel):
+    id: int = None  # O ID da pesquisa é gerado automaticamente, por ser primary key
+    data: str
 
 class Pesquisa(Base):
     __tablename__ =  "Pesquisas"
