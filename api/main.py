@@ -1,14 +1,16 @@
 from fastapi import Depends, FastAPI, Request, APIRouter, HTTPException
-from fastapi.responses import HTMLResponse
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
+
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 
 from . import crud, models # não estamos usando schemas ainda
 from .database import SessionLocal, engine
 
-from fastapi.middleware.cors import CORSMiddleware
-
-from fastapi.templating import Jinja2Templates
-from fastapi.staticfiles import StaticFiles
 import uvicorn, logging
 
 logging.basicConfig(level=logging.INFO) # O nível de logging é INFO.
@@ -115,9 +117,27 @@ async def historico_posto(id_posto, request: Request, db: Session = Depends(get_
 
 @app.post("/pesquisa/nova")
 async def cria_nova_pesquisa(pesquisa: models.PesquisaModel,
-                             db: Session = Depends(get_db)):
-    print(f'Criando nova pesquisa para o dia {pesquisa.data}!')
+                             db: Session = Depends(get_db)) -> models.PesquisaModel:
+    logging.info(f'Criando nova pesquisa para o dia {pesquisa.data}.')
 
+    ## TODO: Fazer alguma forma de validação dos dados, para impedir que valores
+    ## ridículos sejam adicionados.
+
+    try:
+        nova_pesquisa = crud.adiciona_nova_pesquisa(db, pesquisa.data)
+        logging.info(f'o ID da pesquisa nova é {nova_pesquisa.id}')
+        return nova_pesquisa
+    except IntegrityError as e:
+        logging.error(f'Erro ao adicionar pesquisa nova! {str(e)}')
+        if "UNIQUE constraint failed" in str(e):
+            logging.error(f'Já existe uma pesquisa para essa data.')
+            return JSONResponse(status_code=422,
+                                content=jsonable_encoder({
+                                    "code": 422,
+                                    "msg": f"Já há uma pesquisa para essa data: {pesquisa.data}."})
+                                )
+
+####### Configurações
 ## Para exibir imagens 
 app.mount("/images", StaticFiles(directory="templates/images"), name='images')
 
@@ -125,6 +145,7 @@ app.mount("/images", StaticFiles(directory="templates/images"), name='images')
 app.mount("/libs", StaticFiles(directory="templates/libs"), name='libs')
 app.mount("/style", StaticFiles(directory="templates/style"), name='style')
 
+#######
 ## A raiz da aplicação, mostrando a lista de todos os postos:
 @app.get("/", response_class=HTMLResponse)
 async def raiz_app(request: Request, db: Session = Depends(get_db)):
