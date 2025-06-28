@@ -12,6 +12,8 @@ O _back-end_ do projeto é estruturado em:
 * **parser**: processa o arquivo PDF, carregando os valores dele no banco de dados.
 * **api**: uma API utilizando o fastapi
 
+O _front-end_ é implemetado no diretório `templates` dentro de `api`, usando Boostrap e chart.js. 
+
 ## Requisitos
 
 * Para o *scraper*:
@@ -41,6 +43,9 @@ O _back-end_ do projeto é estruturado em:
 * Para rodar a _api_ durante o desenvolvimento:
     * No diretório `api`, rodar `fastapi dev main.py` para o modo de desenvolvedor.
 
+* Para rodar em ambiente de desenvolvimento, com um BD separado:
+    * Setar a variável de ambiente `DB_PATH` para o nome do BD a ser utilizado. 
+    
 ## Deploy 
 
 Primeiramente, é preciso construir o _container_: `podman build -t gasolina-api -f api/Dockerfile .`.
@@ -105,7 +110,7 @@ Novamente, as configurações irão variar conforme o caso de uso.
 * Atualmente, a imagem está muito grande. Ver se eu consigo reduzir o tamanho dela.
 * Integrar os testes com o _container_.
 * Configurar Actions para rodar os testes e fazer o _deploy_ automaticamente.
-* Fazer com que seja possível usar outro BD no back-end.
+* Fazer com que seja possível usar outro BD (ex. PostgreSQL) no back-end.
 
 ### Front-end: 
 * Integração com o Google Maps ou OpenStreetMap. 
