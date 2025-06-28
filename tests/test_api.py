@@ -5,6 +5,7 @@ class TestAPI(unittest.TestCase):
 
     target_URL = 'http://localhost:8000'
     today = str(datetime.now().strftime("%Y%m%d"))
+    nomes_distribuidoras = ['DISTRIBUIDORA 1', 'DISTRIBUIDORA 2', 'DISTRIBUIDORA 3', 'DISTRIBUIDORA 4']
 
     def test_estamos_em_dev(self):
         # Estamos no ambiente de desenvolvimento?
@@ -38,6 +39,25 @@ class TestAPI(unittest.TestCase):
         request_data = requests.get(f'{self.target_URL}/pesquisas').json()
         self.assertEqual(request_data[0]["id"], 1)
         self.assertEqual(request_data[0]["data"], self.today)
+
+    ### Testes para a criação de distribuidoras
+
+    def test_criar_distribuidoras(self):
+        for nome_distribuidora in self.nomes_distribuidoras:
+            # Cadastrar as distribuidoras ...
+            request_data = requests.post(f'{self.target_URL}/distribuidora/nova',
+                                         json = {'nome': nome_distribuidora})
+            self.assertEqual(request_data.status_code, 200)
+        # E testar se deu certo.
+
+        request_data = requests.get(f'{self.target_URL}/distribuidoras').json()
+        distribuidoras_lidas = [distribuidora['nome'] for distribuidora in request_data]
+        for nome_distribuidora in distribuidoras_lidas:
+            self.assertIn(nome_distribuidora, self.nomes_distribuidoras)
+
+
+
+
 
 if __name__ == '__main__':
     unittest.main()

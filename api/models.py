@@ -7,6 +7,10 @@ class PesquisaModel(BaseModel):
     id: int = None  # O ID da pesquisa é gerado automaticamente, por ser primary key
     data: str
 
+class DistribuidoraModel(BaseModel):
+    id: int = None
+    nome: str
+
 class Pesquisa(Base):
     __tablename__ =  "Pesquisas"
     id = Column("IdPesquisa", Integer, primary_key=True)
