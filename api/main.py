@@ -11,6 +11,9 @@ from sqlalchemy.exc import IntegrityError
 from . import crud, models # não estamos usando schemas ainda
 from .database import SessionLocal, engine
 
+from os import environ  # para decidir se estamos em BD de teste ou de produção
+
+
 import uvicorn, logging
 
 logging.basicConfig(level=logging.INFO) # O nível de logging é INFO.
@@ -69,6 +72,22 @@ def get_db():
         db.close()
 
 templates = Jinja2Templates(directory="templates")
+
+@app.get("/environment")
+async def ambiente():
+    try:
+        logging.info(f'DB_PATH: {environ["DB_PATH"]}... estamos no ambiente de desenvolvimento')
+        environment = "DEV"
+
+    except:
+        logging.info("DB_PATH não está setado... estamos no ambiente de produção")
+        environment = "PROD"
+
+    return JSONResponse(status_code=200,
+                        content=jsonable_encoder({
+                                    "code": 200,
+                                    "msg": f"{environment}"})
+                                )
 
 @app.get("/ultima_pesquisa", name="ultima_pesquisa")
 async def ultima_pesquisa(db: Session = Depends(get_db)):
