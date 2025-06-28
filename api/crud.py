@@ -157,4 +157,12 @@ def adiciona_nova_pesquisa(db: Session, data_pesquisa: str):
     return pesquisa
 
 
+def adiciona_nova_distribuidora(db: Session, nome_distribuidora: str):
+    distribuidora = models.Distribuidora(nome = nome_distribuidora)
+
+    db.add(distribuidora)
+    db.commit()
+    db.refresh(distribuidora)
+    return distribuidora
+
 ### FIM.

@@ -156,6 +156,28 @@ async def cria_nova_pesquisa(pesquisa: models.PesquisaModel,
                                     "msg": f"Já há uma pesquisa para essa data: {pesquisa.data}."})
                                 )
 
+
+@app.post("/distribuidora/nova")
+async def cria_nova_distribuidora(distribuidora: models.DistribuidoraModel,
+                                  db: Session = Depends(get_db)) -> models.DistribuidoraModel:
+    logging.info(f'Criando nova distribuidora: {distribuidora.nome}.')
+
+    try:
+        nova_distribuidora = crud.adiciona_nova_distribuidora(db, distribuidora.nome)
+        logging.info(f'O ID da distribuidora nova é {nova_distribuidora.id}.')
+        return nova_distribuidora
+    except IntegrityError as e:
+        logging.error(f'Erro ao adicionar distribuidora nova!')
+        if "UNIQUE constraint failed" in str(e):
+            logging.error('A distribuidora já existe (não há nada de errado nisso).')
+            return JSONResponse(status_code=422,
+                                content=jsonable_encoder({
+                                    "code": 422,
+                                    "msg": f"Já existe a distribuidora: {distribuidora.nome}."})
+                                )
+
+    pass
+
 ####### Configurações
 ## Para exibir imagens a partir do diretório templates/images.
 app.mount("/images", StaticFiles(directory="templates/images"), name='images')
