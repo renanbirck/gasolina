@@ -11,6 +11,13 @@ class DistribuidoraModel(BaseModel):
     id: int = None
     nome: str
 
+class PostoModel(BaseModel):
+    id: int
+    distribuidora: str  # O nome da distribuidora será resolvido depois, dentro do CRUD
+    nome: str
+    endereco: str
+    bairro: str
+
 class Pesquisa(Base):
     __tablename__ =  "Pesquisas"
     id = Column("IdPesquisa", Integer, primary_key=True)
@@ -23,11 +30,12 @@ class Distribuidora(Base):
 
 class PostoGasolina(Base):
     __tablename__ = "PostosGasolina"
+
     id = Column("IdPosto", Integer, primary_key=True, unique=True)
-    distribuidora = Column("IdDistribuidora", Integer)
-    nome = Column("NomePosto", String)
-    endereco = Column("EnderecoPosto", String)
-    bairro = Column("BairroPosto", String)
+    distribuidora = Column("IdDistribuidora", Integer, ForeignKey('Distribuidoras.IdDistribuidora', ondelete='RESTRICT'))
+    nome = Column("NomePosto", String, nullable=False)
+    endereco = Column("EnderecoPosto", String, nullable=False)
+    bairro = Column("BairroPosto", String, nullable=False)
 
 class Precos(Base):
     __tablename__ = "Precos"

@@ -2,7 +2,9 @@ from sqlalchemy.orm import Session
 from . import models # não estamos usando schemas ainda
 
 from datetime import datetime
+import logging
 
+logging.basicConfig(level=logging.INFO) # O nível de logging é INFO.
 # Arquivo com a lógica CRUD  a partir da API
 # no momento é só leitura, futuramente o scraper vai atualizar pela API
 
@@ -143,7 +145,7 @@ def dados_pesquisa(db: Session, id_pesquisa: int):
 
     return postos
 
-### Escrita
+### Funções para escrita no BD
 
 def adiciona_nova_pesquisa(db: Session, data_pesquisa: str):
     """ Cria uma linha na tabela Pesquisas para uma nova pesquisa,
@@ -164,5 +166,41 @@ def adiciona_nova_distribuidora(db: Session, nome_distribuidora: str):
     db.commit()
     db.refresh(distribuidora)
     return distribuidora
+
+def adiciona_novo_posto(db: Session, posto: dict):
+    ## Determinar o ID da distribuidora antes.
+
+    logging.info(f"adicionando posto: {posto}")
+    try:
+        id_distribuidora = db.query(models.Distribuidora.id).where(models.Distribuidora.nome == posto.distribuidora).first()[0]
+        logging.info(f"O ID da distribuidora {posto.distribuidora} é {id_distribuidora}.")
+    except:
+        raise ValueError(f"??? ID da distribuidora {posto.distribuidora} desconhecido?")
+
+    novo_posto = models.PostoGasolina(id = posto.id,
+                                      distribuidora = id_distribuidora,
+                                      nome = posto.nome,
+                                      endereco = posto.endereco,
+                                      bairro = posto.bairro)
+
+    db.add(novo_posto)
+    db.commit()
+    db.refresh(novo_posto)
+
+    logging.info(f"Posto adicionado!")
+
+    # Temos uma situação atípica aqui. O banco de dados espera uma int (id_distribuidora), mas o pydantic
+    # espera uma string (nome da distribuidora). Então, iremos fazer na mão construindo a resposta manualmente.
+    # TODO: Investigar se existe alguma forma menos manual de fazer isso.
+
+    response_dict = {
+        "id": novo_posto.id,
+        "distribuidora": posto.distribuidora,  # Use the original string name
+        "nome": novo_posto.nome,
+        "endereco": novo_posto.endereco,
+        "bairro": novo_posto.bairro
+    }
+
+    return models.PostoModel(**response_dict)
 
 ### FIM.
