@@ -56,7 +56,45 @@ class TestAPI(unittest.TestCase):
             self.assertIn(nome_distribuidora, self.nomes_distribuidoras)
 
 
+    ### Teste para a criação de postos
 
+    def test_criar_posto(self):
+        ## O ID do posto vem da tabela, então por consistência nós vamos fornecer ele.
+        dados_posto_1 = {'id_posto': 1,
+                         'nome': 'POSTO FAKE 1',
+                         'distribuidora': 'DISTRIBUIDORA 1',
+                         'endereco': 'Rua dos Bobos, 0',
+                         'bairro': 'Centro'}
+
+        dados_posto_2 = {'id_posto': 2,
+                         'nome': 'POSTO FAKE 2',
+                         'distribuidora': 'DISTRIBUIDORA 2',
+                         'endereco': 'Rua dos Bobos, 1',
+                         'bairro': 'Centro'}
+
+        dados_posto_3 = {'id_posto': 3,
+                         'nome': 'POSTO FAKE 3',
+                         'distribuidora': 'DISTRIBUIDORA 999',
+                         'endereco': 'Rua dos Bobos, 2',
+                         'bairro': 'Centro'}
+
+        request_data = requests.post(f'{self.target_URL}/postos/novo',
+                                     json = dados_posto_1)
+        self.assertEqual(request_data.status_code, 200)
+
+        request_data = requests.post(f'{self.target_URL}/postos/novo',
+                                     json = dados_posto_2)
+        self.assertEqual(request_data.status_code, 200)
+
+        # Testar: o posto já existe
+        request_data = requests.post(f'{self.target_URL}/postos/novo',
+                                     json = dados_posto_1)
+        self.assertEqual(request_data.status_code, 422)
+
+        # Testar: o posto tem uma distribuidora inválida
+        request_data = requests.post(f'{self.target_URL}/postos/novo',
+                                     json = dados_posto_3)
+        self.assertEqual(request_data.status_code, 422)
 
 
 if __name__ == '__main__':

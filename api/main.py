@@ -133,7 +133,6 @@ async def historico_posto(id_posto, request: Request, db: Session = Depends(get_
                                           name="404.html",
                                           status_code=404)
 
-
 @app.post("/pesquisa/nova")
 async def cria_nova_pesquisa(pesquisa: models.PesquisaModel,
                              db: Session = Depends(get_db)) -> models.PesquisaModel:
@@ -156,7 +155,6 @@ async def cria_nova_pesquisa(pesquisa: models.PesquisaModel,
                                     "msg": f"Já há uma pesquisa para essa data: {pesquisa.data}."})
                                 )
 
-
 @app.post("/distribuidora/nova")
 async def cria_nova_distribuidora(distribuidora: models.DistribuidoraModel,
                                   db: Session = Depends(get_db)) -> models.DistribuidoraModel:
@@ -175,8 +173,18 @@ async def cria_nova_distribuidora(distribuidora: models.DistribuidoraModel,
                                     "code": 422,
                                     "msg": f"Já existe a distribuidora: {distribuidora.nome}."})
                                 )
-
     pass
+
+@app.post("/posto/novo")
+async def cria_novo_posto(posto: models.PostoModel,
+                          db: Session = Depends(get_db)) -> models.PostoModel:
+    logging.info(f'Criando novo posto {posto}.')
+
+    novo_posto = crud.adiciona_novo_posto(db, posto)
+
+    logging.info(f'O ID do posto novo é {novo_posto.id}.')
+    return novo_posto
+
 
 ####### Configurações
 ## Para exibir imagens a partir do diretório templates/images.
@@ -209,6 +217,6 @@ print("--------------------------")
 
 # https://stackoverflow.com/questions/75040507/how-to-access-fastapi-backend-from-a-different-machine-ip-on-the-same-local-netw
 if __name__ == '__main__':
-    uvicorn.run(app, host='0.0.0.0', port=8000)
+    uvicorn.run(app, host='0.0.0.0', port=8000, debug=True)
 
 # FIM.

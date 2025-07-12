@@ -10,9 +10,9 @@ O _back-end_ do projeto é estruturado em:
 
 * **scraper**: faz a raspagem do site do PROCON e determina o arquivo PDF a ser baixado.
 * **parser**: processa o arquivo PDF, carregando os valores dele no banco de dados.
-* **api**: uma API utilizando o fastapi
+* **api**: uma API utilizando o fastapi, com um _front-end_ simples.
 
-O _front-end_ é implemetado no diretório `templates` dentro de `api`, usando Boostrap e chart.js. 
+O _front-end_ é implemetado no diretório `templates` dentro de `api`, usando Bootstrap, bootstrap-table e chart.js. 
 
 ## Requisitos
 
@@ -21,7 +21,7 @@ O _front-end_ é implemetado no diretório `templates` dentro de `api`, usando B
 	* requests;
 	* BeautifulSoup.
 * Para o parser:
-	* [pymupdf](https://github.com/pymupdf/PyMuPDF/issues/) (foi o que funcionou melhor **para este layout de PDF** nos meus testes);
+	* [pymupdf](https://github.com/pymupdf/PyMuPDF/)
 * Para a API:
 	* FastAPI
 * Para o front-end:
@@ -102,12 +102,12 @@ Novamente, as configurações irão variar conforme o caso de uso.
 ### Scraper e parser:
 * A estrutura dos PDFs mudou conforme o tempo, então preciso ver como fazer. Provavelmente vou fazer _data wrangling_ na mão e fornecer um CSV.
 * Verificar se vale a pena fazer a raspagem de forma assíncrona/paralela (acredito que não).
- Automatizar o _deploy_.
+* Automatizar o _deploy_.
 * Fazer a raspagem comunicar via API em vez de chamadas SQL diretamente no BD.
 * Elaborar uma forma de, do zero, criar uma carga inicial de dados (talvez usando os PDFs de 2023 a 2025) e construir o BD sem precisar fornecer um binário no repositório.
 
 ### API:
-* Atualmente, a imagem está muito grande. Ver se eu consigo reduzir o tamanho dela.
+* ~~Atualmente, a imagem está muito grande. Ver se eu consigo reduzir o tamanho dela.~~ Resolvido usando Alpine, e não Debian.
 * Integrar os testes com o _container_.
 * Configurar Actions para rodar os testes e fazer o _deploy_ automaticamente.
 * Fazer com que seja possível usar outro BD (ex. PostgreSQL) no back-end.
