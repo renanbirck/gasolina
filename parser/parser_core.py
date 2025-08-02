@@ -55,9 +55,16 @@ def separa_partes(linha):
 
     posto["distribuidora"] = linha[2 + precisa_offset]
 
-    campos = ["comum", "aditivada", "diesel", "etanol", "gnv"]
-    posto.update(zip(campos, [(float(preco.replace(',','.')) if '-' not in preco else None) for preco in linha[3 + precisa_offset:]]))
-   
+    # Nos PDFs mais novos, a prefeitura colocou o campo para gasolina "premium". Então precisamos tratar aqui, adicionando mais um campo
+
+    if len(linha) == 9:
+        campos = ["comum", "aditivada", "premium", "diesel", "etanol", "gnv"]
+        posto.update(zip(campos, [(float(preco.replace(',','.')) if '-' not in preco else None) for preco in linha[3 + precisa_offset:]]))
+    else:
+        campos = ["comum", "aditivada", "diesel", "etanol", "gnv"]
+        posto.update(zip(campos, [(float(preco.replace(',','.')) if '-' not in preco else None) for preco in linha[3 + precisa_offset:]]))
+        posto['premium'] = None
+
     # XXX: Gambiarra para desfazer quando a prefeitura não colocou bairro.
 
     try:
@@ -173,5 +180,14 @@ class PDFParser:
 
         for posto in self.postos:
             self.database.cursor.execute('INSERT INTO Precos(IdPesquisa, IdPosto, PrecoGasolinaComum, \
-                                                             PrecoGasolinaAditivada, PrecoEtanol, PrecoDiesel, \
-                                                             PrecoGNV) VALUES (?, ?, ?, ?, ?, ?, ?)', (id_pesquisa, posto["id"], posto["comum"], posto["aditivada"], posto["etanol"], posto["diesel"], posto["gnv"],))
+                                                                 PrecoGasolinaAditivada, PrecoGasolinaPremium, PrecoEtanol, PrecoDiesel, \
+                                                                 PrecoGNV) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', (id_pesquisa, 
+                                                                                                    posto["id"],
+                                                                                                    posto["comum"], 
+                                                                                                    posto["aditivada"], 
+                                                                                                    posto["premium"],
+                                                                                                    posto["etanol"], 
+                                                                                                    posto["diesel"], 
+                                                                                                    posto["gnv"],))
+            
+
