@@ -73,6 +73,7 @@ def historico_posto(db: Session, id_posto: int):
     query = db.query(models.Pesquisa.data, \
                      models.Precos.precoGasolinaComum, \
                      models.Precos.precoGasolinaAditivada, \
+                     models.Precos.precoGasolinaPremium,
                      models.Precos.precoEtanol, \
                      models.Precos.precoDiesel, \
                      models.Precos.precoGNV).join(models.Pesquisa, 
@@ -83,9 +84,10 @@ def historico_posto(db: Session, id_posto: int):
         { "data": datetime.strptime(row[0], "%Y%m%d").strftime("%d/%m/%Y"),
           "gasolina_comum": row[1],
           "gasolina_aditivada": row[2],
-          "etanol": row[3],
-          "diesel": row[4],
-          "gnv": row[5]
+          "gasolina_premium": row[3],
+          "etanol": row[4],
+          "diesel": row[5],
+          "gnv": row[6]
         } for row in result 
     ]
 
@@ -100,8 +102,17 @@ def dados_pesquisa(db: Session, id_pesquisa: int):
     # JOIN PostosGasolina PG on P.IdPosto = PG.IdPosto
     # WHERE P.IdPesquisa = {id_pesquisa}
 
-    query = db.query(models.Pesquisa.data, models.PostoGasolina.id, models.PostoGasolina.nome, models.PostoGasolina.endereco, models.PostoGasolina.bairro, models.Precos.precoGasolinaComum, models.Precos.precoGasolinaAditivada,
-                     models.Precos.precoEtanol,models.Precos.precoDiesel,models.Precos.precoGNV) \
+    query = db.query(models.Pesquisa.data, 
+                     models.PostoGasolina.id,
+                     models.PostoGasolina.nome, 
+                     models.PostoGasolina.endereco, 
+                     models.PostoGasolina.bairro, 
+                     models.Precos.precoGasolinaComum, 
+                     models.Precos.precoGasolinaAditivada,
+                     models.Precos.precoGasolinaPremium,
+                     models.Precos.precoEtanol,
+                     models.Precos.precoDiesel,
+                     models.Precos.precoGNV) \
     .join(models.Pesquisa, models.Precos.pesquisa==models.Pesquisa.id) \
     .join(models.PostoGasolina, models.Precos.posto == models.PostoGasolina.id)  \
     .filter(models.Precos.pesquisa == id_pesquisa)
@@ -119,9 +130,10 @@ def dados_pesquisa(db: Session, id_pesquisa: int):
             "bairro": row[4],
             "gasolina_comum": row[5],
             "gasolina_aditivada": row[6],
-            "etanol": row[7],
-            "diesel": row[8],
-            "GNV": row[9]
+            "gasolina_premium": row[7],
+            "etanol": row[8],
+            "diesel": row[9],
+            "GNV": row[10]
         }
         for row in result
     ]

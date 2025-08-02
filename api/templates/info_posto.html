@@ -15,7 +15,6 @@
     <p class="container text-muted"> Posto {{ dados_posto.id }} - {{ dados_posto.nome }} </p> 
     <p class="container text-muted"> Endereço: <a href="http://www.google.com/maps?q={{ dados_posto.endereco | replace(".", "") }}-Joinville">{{ dados_posto.endereco }}</a> - {{ dados_posto.bairro }} </p>
 
-
     <h2 class="text-center">Histórico de Preços do Posto </h2>
 
     <div class="container-fluid text-center">
@@ -28,6 +27,7 @@
               <th>Data</th>
               <th>Gasolina comum</th>
               <th>Gasolina aditivada</th>
+              <th>Gasolina premium</th>
               <th>Etanol</th>
               <th>Diesel</th>
               <th>GNV</th>
@@ -38,6 +38,7 @@
               <td> {{ posto.data }} </td>
               <td> {{ '%.2f' % posto.gasolina_comum if posto.gasolina_comum else '---' }} </td>
               <td> {{ '%.2f' % posto.gasolina_aditivada if posto.gasolina_aditivada else '---'}} </td>
+              <td> {{ '%.2f' % posto.gasolina_premium if posto.gasolina_premium else '---'}} </td>
               <td> {{ '%.2f' % posto.etanol if posto.etanol else '---'}} </td>
               <td> {{ '%.2f' % posto.diesel if posto.diesel else '---' }} </td>
               <td> {{ '%.2f' % posto.GNV if posto.GNV else '---' }} </td>

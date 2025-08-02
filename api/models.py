@@ -27,6 +27,7 @@ class Precos(Base):
     posto = Column("IdPosto", Integer)
     precoGasolinaComum = Column("PrecoGasolinaComum", Numeric)
     precoGasolinaAditivada = Column("PrecoGasolinaAditivada", Numeric)
+    precoGasolinaPremium = Column("PrecoGasolinaPremium", Numeric)
     precoEtanol = Column("PrecoEtanol", Numeric)
     precoDiesel = Column("PrecoDiesel", Numeric)
     precoGNV = Column("PrecoGNV", Numeric)
