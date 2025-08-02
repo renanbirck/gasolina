@@ -22,6 +22,7 @@
           <th>Endereço</th>
           <th data-sortable="true">Gasolina <br>comum</th>
           <th data-sortable="true">Gasolina <br>aditivada</th>
+          <th data-sortable="true">Gasolina <br>premium</th>
           <th data-sortable="true">Etanol</th>
           <th data-sortable="true">Diesel</th>
           <th data-sortable="true">GNV</th>
@@ -35,6 +36,7 @@
           <td> <a href="http://www.google.com/maps?q={{ posto.endereco | replace(".", "") }} - {{ posto.bairro }} -Joinville">{{ posto.endereco }} - {{ posto.bairro }}</a></td>
           <td> {{ ('%.2f' % posto.gasolina_comum if posto.gasolina_comum else '---') | replace(".", ",") }} </td> 
           <td> {{ ('%.2f' % posto.gasolina_aditivada if posto.gasolina_aditivada else '---') | replace (".", ",") }} </td>
+          <td> {{ ('%.2f' % posto.gasolina_premium if posto.gasolina_premium else '---') | replace (".", ",") }} </td>
           <td> {{ ('%.2f' % posto.etanol if posto.etanol else '---') | replace (".", ",") }} </td>
           <td> {{ ('%.2f' % posto.diesel if posto.diesel else '---') | replace (".", ",") }} </td>
           <td> {{ ('%.2f' % posto.GNV if posto.GNV else '---') | replace (".", ",") }} </td>
