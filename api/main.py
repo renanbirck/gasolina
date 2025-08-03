@@ -12,11 +12,13 @@ from . import crud, models # não estamos usando schemas ainda
 from .database import SessionLocal, engine
 
 from os import environ  # para decidir se estamos em BD de teste ou de produção
-
-
 import uvicorn, logging
 
-logging.basicConfig(level=logging.INFO) # O nível de logging é INFO.
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s %(message)s"
+)
+logging.getLogger("uvicorn.access").setLevel(logging.INFO)
 
 # Tratadores de exceções para erro 404 e 500
 
@@ -153,7 +155,7 @@ async def cria_nova_pesquisa(pesquisa: models.PesquisaModel,
                                 content=jsonable_encoder({
                                     "code": 422,
                                     "msg": f"Já há uma pesquisa para essa data: {pesquisa.data}."})
-                                )
+                                ) # pyright: ignore[reportReturnType]
 
 @app.post("/distribuidora/nova")
 async def cria_nova_distribuidora(distribuidora: models.DistribuidoraModel,
@@ -172,19 +174,57 @@ async def cria_nova_distribuidora(distribuidora: models.DistribuidoraModel,
                                 content=jsonable_encoder({
                                     "code": 422,
                                     "msg": f"Já existe a distribuidora: {distribuidora.nome}."})
-                                )
+                                ) # pyright: ignore[reportReturnType]
     pass
 
 @app.post("/posto/novo")
 async def cria_novo_posto(posto: models.PostoModel,
-                          db: Session = Depends(get_db)) -> models.PostoModel:
-    logging.info(f'Criando novo posto {posto}.')
+                          db: Session = Depends(get_db)) -> models.PostoModel: # pyright: ignore[reportReturnType]
+    try:
+        logging.info(f'Criando novo posto {posto}.')
+        novo_posto = crud.adiciona_novo_posto(db, posto) # pyright: ignore[reportArgumentType]
+        logging.info(f'O ID do posto novo é {novo_posto.id}.')
+        return novo_posto
+    except IntegrityError as e:
+        logging.error('Erro ao adicionar posto novo!')
+        if "UNIQUE constraint failed" in str(e):
+            logging.error('Já existe o posto com esse ID (não há nada de errado nisso).')
+            return JSONResponse(status_code=422,
+                                content=jsonable_encoder({
+                                    "code": 422,
+                                    "msg": f"Já existe o posto com o ID {posto.id}."})
+                                ) # pyright: ignore[reportReturnType]
+    except ValueError as v:
+        return JSONResponse(status_code=422,
+                            content=jsonable_encoder({
+                                "code": 422,
+                                "msg": str(v)})
+                            ) # pyright: ignore[reportReturnType]
+    
+    
+@app.post("/preco/novo")
+async def cria_novo_preco(preco: models.PrecoModel,
+                          db: Session = Depends(get_db)) -> models.PrecoModel:
+    logging.info(f'Criando novo preço {preco}.')
 
-    novo_posto = crud.adiciona_novo_posto(db, posto)
-
-    logging.info(f'O ID do posto novo é {novo_posto.id}.')
-    return novo_posto
-
+    try:
+        novo_preco = crud.adiciona_novo_preco(db, preco)
+        logging.info(f'O ID do preço novo é {novo_preco.id}.')
+        return novo_preco
+    except IntegrityError as e:
+        logging.error('Erro ao adicionar preço novo!')
+        if "UNIQUE constraint failed" in str(e):
+            return JSONResponse(status_code=422,
+                                content=jsonable_encoder({
+                                    "code": 422,
+                                    "msg": f"Já existe o preço para o posto {preco.posto} na pesquisa {preco.pesquisa}."})
+                                ) # pyright: ignore[reportReturnType]
+    except ValueError as v:
+        return JSONResponse(status_code=422,
+                            content=jsonable_encoder({
+                                "code": 422,
+                                "msg": str(v)})
+                            ) # pyright: ignore[reportReturnType]
 
 ####### Configurações
 ## Para exibir imagens a partir do diretório templates/images.

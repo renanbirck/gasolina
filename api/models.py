@@ -1,4 +1,5 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Numeric
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Numeric, UniqueConstraint
+from typing import Optional
 from sqlalchemy.orm import relationship
 from .database import Base # Os modelos herdam de Base
 from pydantic import BaseModel
@@ -17,6 +18,19 @@ class PostoModel(BaseModel):
     nome: str
     endereco: str
     bairro: str
+
+class PrecoModel(BaseModel):    
+    id: int = None
+    pesquisa: int  # ID da pesquisa
+    posto: int  # ID do posto
+
+    ## Pegadinha: float não pode ser null, então usamos Optional[float] para permitir que seja None.
+    precoGasolinaComum: Optional[float] = None
+    precoGasolinaAditivada: Optional[float] = None 
+    precoGasolinaPremium: Optional[float] = None 
+    precoEtanol: Optional[float] = None 
+    precoDiesel: Optional[float] = None 
+    precoGNV: Optional[float] = None 
 
 class Pesquisa(Base):
     __tablename__ =  "Pesquisas"
@@ -37,14 +51,20 @@ class PostoGasolina(Base):
     endereco = Column("EnderecoPosto", String, nullable=False)
     bairro = Column("BairroPosto", String, nullable=False)
 
-class Precos(Base):
+class Preco(Base):
     __tablename__ = "Precos"
     id = Column("IdPreco", Integer, primary_key=True)
     pesquisa = Column("IdPesquisa", Integer)
     posto = Column("IdPosto", Integer)
-    precoGasolinaComum = Column("PrecoGasolinaComum", Numeric)
-    precoGasolinaAditivada = Column("PrecoGasolinaAditivada", Numeric)
-    precoGasolinaPremium = Column("PrecoGasolinaPremium", Numeric)
-    precoEtanol = Column("PrecoEtanol", Numeric)
-    precoDiesel = Column("PrecoDiesel", Numeric)
-    precoGNV = Column("PrecoGNV", Numeric)
+    precoGasolinaComum = Column("PrecoGasolinaComum", Numeric, nullable=True)
+    precoGasolinaAditivada = Column("PrecoGasolinaAditivada", Numeric, nullable=True)
+    precoGasolinaPremium = Column("PrecoGasolinaPremium", Numeric, nullable=True)
+    precoEtanol = Column("PrecoEtanol", Numeric, nullable=True)
+    precoDiesel = Column("PrecoDiesel", Numeric, nullable=True)
+    precoGNV = Column("PrecoGNV", Numeric, nullable=True)
+
+    # Não pode haver uma pesquisa com o mesmo posto mais de uma vez.
+    __table_args__ = (
+        UniqueConstraint('IdPesquisa', 'IdPosto', name='uix_pesquisa_posto'),
+    )
+

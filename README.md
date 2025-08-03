@@ -101,10 +101,11 @@ Novamente, as configurações irão variar conforme o caso de uso.
 (em nenhuma ordem)
 ### Scraper e parser:
 * A estrutura dos PDFs mudou conforme o tempo, então preciso ver como fazer. Provavelmente vou fazer _data wrangling_ na mão e fornecer um CSV.
-* Verificar se vale a pena fazer a raspagem de forma assíncrona/paralela (acredito que não).
 * Automatizar o _deploy_.
 * Fazer a raspagem comunicar via API em vez de chamadas SQL diretamente no BD.
+** Em desenvolvimento.
 * Elaborar uma forma de, do zero, criar uma carga inicial de dados (talvez usando os PDFs de 2023 a 2025) e construir o BD sem precisar fornecer um binário no repositório.
+** Parcialmente resolvido, com "dump" do BD.
 
 ### API:
 * ~~Atualmente, a imagem está muito grande. Ver se eu consigo reduzir o tamanho dela.~~ Resolvido usando Alpine, e não Debian.

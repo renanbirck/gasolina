@@ -2,11 +2,15 @@ from sqlalchemy.orm import Session
 from . import models # não estamos usando schemas ainda
 
 from datetime import datetime
+
 import logging
 
-logging.basicConfig(level=logging.INFO) # O nível de logging é INFO.
-# Arquivo com a lógica CRUD  a partir da API
-# no momento é só leitura, futuramente o scraper vai atualizar pela API
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s %(message)s"
+)
+logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
+
 
 ### Leitura
 def get_ultima_pesquisa(db: Session):
@@ -114,15 +118,15 @@ def dados_pesquisa(db: Session, id_pesquisa: int):
                      models.PostoGasolina.nome, 
                      models.PostoGasolina.endereco, 
                      models.PostoGasolina.bairro, 
-                     models.Precos.precoGasolinaComum, 
-                     models.Precos.precoGasolinaAditivada,
-                     models.Precos.precoGasolinaPremium,
-                     models.Precos.precoEtanol,
-                     models.Precos.precoDiesel,
-                     models.Precos.precoGNV) \
-    .join(models.Pesquisa, models.Precos.pesquisa==models.Pesquisa.id) \
-    .join(models.PostoGasolina, models.Precos.posto == models.PostoGasolina.id)  \
-    .filter(models.Precos.pesquisa == id_pesquisa)
+                     models.Preco.precoGasolinaComum, 
+                     models.Preco.precoGasolinaAditivada,
+                     models.Preco.precoGasolinaPremium,
+                     models.Preco.precoEtanol,
+                     models.Preco.precoDiesel,
+                     models.Preco.precoGNV) \
+    .join(models.Pesquisa, models.Preco.pesquisa==models.Pesquisa.id) \
+    .join(models.PostoGasolina, models.Preco.posto == models.PostoGasolina.id)  \
+    .filter(models.Preco.pesquisa == id_pesquisa)
     
     result = query.all()
 
@@ -202,5 +206,37 @@ def adiciona_novo_posto(db: Session, posto: dict):
     }
 
     return models.PostoModel(**response_dict)
+
+def adiciona_novo_preco(db: Session, preco: dict):
+    """ Adiciona um novo preço para um posto em uma pesquisa. """
+
+    logging.info(f"Adicionando nova pesquisa na tabela: {preco}")
+
+    # Verifica se existe a pesquisa e o posto especificado 
+
+    pesquisa_existe = db.query(models.Pesquisa).filter(models.Pesquisa.id == preco.pesquisa).first()
+    if not pesquisa_existe:
+        raise ValueError(f"Pesquisa com o ID informado {preco.pesquisa} não existe!")
+
+    posto_existe = db.query(models.PostoGasolina).filter(models.PostoGasolina.id == preco.posto).first()
+    if not posto_existe:
+        raise ValueError(f"Posto com o ID informado {preco.posto} não existe!")
+    
+    print(f"AQUI!!!! {preco}")
+    novo_preco = models.Preco(pesquisa = preco.pesquisa,
+                              posto = preco.posto,
+                              precoGasolinaComum = preco.precoGasolinaComum,
+                              precoGasolinaAditivada = preco.precoGasolinaAditivada,
+                              precoGasolinaPremium = preco.precoGasolinaPremium,
+                              precoEtanol = preco.precoEtanol,
+                              precoDiesel = preco.precoDiesel,
+                              precoGNV = preco.precoGNV
+                              )
+
+    db.add(novo_preco)
+    db.commit()
+    db.refresh(novo_preco)
+
+    return novo_preco
 
 ### FIM.
