@@ -54,6 +54,17 @@ def separa_partes(linha):
     posto["endereco"] = ','.join(endereco_bairro[:-1])
     posto["bairro"] = endereco_bairro[-1].strip()
 
+    # "kludge" para consertar símbolos que apareceram dentro do PDF
+
+    posto["nome"] = posto["nome"].replace('Ʃ', 'tt')
+    posto["nome"] = posto["nome"].replace('Ɵ', 'ti')
+
+    posto["bairro"] = posto["bairro"].replace('Ʃ', 'tt')
+    posto["bairro"] = posto["bairro"].replace('Ɵ', 'ti')
+
+    posto["endereco"] = posto["endereco"].replace('Ɵ', 'ti')
+    posto["endereco"] = posto["endereco"].replace('Ʃ', 'tt')
+
     posto["distribuidora"] = linha[2 + precisa_offset]
 
     # Nos PDFs mais novos, a prefeitura colocou o campo para gasolina "premium". Então precisamos tratar aqui, adicionando mais um campo
