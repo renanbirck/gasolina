@@ -100,10 +100,8 @@ Novamente, as configurações irão variar conforme o caso de uso.
 
 (em nenhuma ordem)
 ### Scraper e parser:
-* A estrutura dos PDFs mudou conforme o tempo, então preciso ver como fazer. Provavelmente vou fazer _data wrangling_ na mão e fornecer um CSV.
-* Automatizar o _deploy_.
-* Fazer a raspagem comunicar via API em vez de chamadas SQL diretamente no BD.
-** Em desenvolvimento.
+* Automatizar o _scraping_.
+* Fazer a raspagem comunicar via API em vez de chamadas SQL diretamente no BD. Em desenvolvimento, mas ainda falta simplificar o código e fazer em "batch" em vez de uma entrada por vez.
 * Elaborar uma forma de, do zero, criar uma carga inicial de dados (talvez usando os PDFs de 2023 a 2025) e construir o BD sem precisar fornecer um binário no repositório.
 ** Parcialmente resolvido, com "dump" do BD.
 
@@ -111,6 +109,7 @@ Novamente, as configurações irão variar conforme o caso de uso.
 * ~~Atualmente, a imagem está muito grande. Ver se eu consigo reduzir o tamanho dela.~~ Resolvido usando Alpine, e não Debian.
 * Integrar os testes com o _container_.
 * Configurar Actions para rodar os testes e fazer o _deploy_ automaticamente.
+* Adicionar autenticação e _logging_.
 * Fazer com que seja possível usar outro BD (ex. PostgreSQL) no back-end.
 
 ### Front-end: 
