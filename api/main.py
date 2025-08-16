@@ -117,18 +117,23 @@ async def lista_infos_posto(id_posto, db: Session = Depends(get_db)):
 
 @app.get("/historico/{id_posto}", name="historico_posto", response_class=HTMLResponse)
 async def historico_posto(id_posto, request: Request, db: Session = Depends(get_db)):
+    
+    try:
+        dados_posto = await lista_infos_posto(int(id_posto), db)
+        print(dados_posto)
 
-    dados_posto = await lista_infos_posto(int(id_posto), db)
-    print(dados_posto)
+        dados_historico_posto = crud.historico_posto(db, int(id_posto))
+        print(dados_historico_posto)
 
-    dados_historico_posto = crud.historico_posto(db, int(id_posto))
-    print(dados_historico_posto)
-
-    return templates.TemplateResponse(
-            request=request, name="info_posto.html",
-            context={"dados_posto": dados_posto[0],
-                     "dados_historico_posto": dados_historico_posto}
-            )
+        return templates.TemplateResponse(
+               request=request, name="info_posto.html",
+               context={"dados_posto": dados_posto[0],
+                        "dados_historico_posto": dados_historico_posto}
+               )
+    except:  # O posto não existe
+        return templates.TemplateResponse(request=request,
+                                          name="404.html",
+                                          status_code=404)
 
 @app.post("/pesquisa/nova")
 async def cria_nova_pesquisa(pesquisa: models.PesquisaModel,
