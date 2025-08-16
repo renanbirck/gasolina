@@ -81,13 +81,13 @@ def historico_posto(db: Session, id_posto: int):
     # ORDER BY DataPesquisa
 
     query = db.query(models.Pesquisa.data, \
-                     models.Precos.precoGasolinaComum, \
-                     models.Precos.precoGasolinaAditivada, \
-                     models.Precos.precoGasolinaPremium,
-                     models.Precos.precoEtanol, \
-                     models.Precos.precoDiesel, \
-                     models.Precos.precoGNV).join(models.Pesquisa, 
-                                                  models.Precos.pesquisa == models.Pesquisa.id).filter(models.Precos.posto == id_posto).order_by(models.Pesquisa.data)
+                     models.Preco.precoGasolinaComum, \
+                     models.Preco.precoGasolinaAditivada, \
+                     models.Preco.precoGasolinaPremium,
+                     models.Preco.precoEtanol, \
+                     models.Preco.precoDiesel, \
+                     models.Preco.precoGNV).join(models.Pesquisa, 
+                                                  models.Preco.pesquisa == models.Pesquisa.id).filter(models.Preco.posto == id_posto).order_by(models.Pesquisa.data)
 
     result = query.all()
     dados_historicos = [
