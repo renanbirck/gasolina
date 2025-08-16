@@ -153,7 +153,8 @@ class PDFParser:
         """ Carrega as informações que lemos anteriormente. """
         # TODO: colocar tudo na mesma etapa, para ganharmos tempo e simplificarmos o código.
 
-        API_BASE = 'http://localhost:8000'
+        # API_BASE = 'http://localhost:8000'
+        API_BASE = 'https://gasolina.renanbirck.rocks'
 
         data_pesquisa = mini_date_parser(self.data_pesquisa)
 
