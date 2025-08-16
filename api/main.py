@@ -117,7 +117,6 @@ async def lista_infos_posto(id_posto, db: Session = Depends(get_db)):
 
 @app.get("/historico/{id_posto}", name="historico_posto", response_class=HTMLResponse)
 async def historico_posto(id_posto, request: Request, db: Session = Depends(get_db)):
-
     try:
         dados_posto = await lista_infos_posto(int(id_posto), db)
         print(dados_posto)
@@ -186,9 +185,9 @@ async def cria_novo_posto(posto: models.PostoModel,
         logging.info(f'O ID do posto novo é {novo_posto.id}.')
         return novo_posto
     except IntegrityError as e:
-        logging.error('Erro ao adicionar posto novo!')
+        logging.warning('Erro ao adicionar posto novo!')
         if "UNIQUE constraint failed" in str(e):
-            logging.error('Já existe o posto com esse ID (não há nada de errado nisso).')
+            logging.info('Já existe o posto com esse ID (não há nada de errado nisso, porque o ID vem do PDF).')
             return JSONResponse(status_code=422,
                                 content=jsonable_encoder({
                                     "code": 422,
@@ -205,6 +204,8 @@ async def cria_novo_posto(posto: models.PostoModel,
 @app.post("/preco/novo")
 async def cria_novo_preco(preco: models.PrecoModel,
                           db: Session = Depends(get_db)) -> models.PrecoModel:
+    
+    logging.info(f'>>> {preco}')
     logging.info(f'Criando novo preço {preco}.')
 
     try:

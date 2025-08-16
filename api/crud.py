@@ -221,8 +221,7 @@ def adiciona_novo_preco(db: Session, preco: dict):
     posto_existe = db.query(models.PostoGasolina).filter(models.PostoGasolina.id == preco.posto).first()
     if not posto_existe:
         raise ValueError(f"Posto com o ID informado {preco.posto} não existe!")
-    
-    print(f"AQUI!!!! {preco}")
+        
     novo_preco = models.Preco(pesquisa = preco.pesquisa,
                               posto = preco.posto,
                               precoGasolinaComum = preco.precoGasolinaComum,
