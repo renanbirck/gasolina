@@ -5,6 +5,7 @@ import fitz
 import logging
 from database import Database
 import requests 
+from os import environ 
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -152,13 +153,18 @@ class PDFParser:
     def carrega_no_DB(self):
         """ Carrega as informações que lemos anteriormente. """
         # TODO: colocar tudo na mesma etapa, para ganharmos tempo e simplificarmos o código.
+        
+        try: 
+            API_BASE = environ["GASOLINA_API_BASE"]
+        except:
+            logging.info("A variável de ambiente GASOLINA_API_BASE não está setada! Vou presumir que a API roda localmente.")
+            API_BASE = 'http://localhost:8000'
 
-        # API_BASE = 'http://localhost:8000'
-        API_BASE = 'https://gasolina.renanbirck.rocks'
+        logging.info(f"A nossa API fica em {API_BASE}.")
 
         data_pesquisa = mini_date_parser(self.data_pesquisa)
 
-        # Criar nova pesquisa chamando a API 
+# Criar nova pesquisa chamando a API 
 
         result = requests.post(f"{API_BASE}/pesquisa/nova", json={"data": data_pesquisa})
 
