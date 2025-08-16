@@ -4,6 +4,8 @@ from sqlite3 import IntegrityError
 import fitz 
 import logging
 from database import Database
+import requests 
+
 logging.basicConfig(level=logging.DEBUG)
 
 def pretty_print_table(table):
@@ -30,8 +32,7 @@ def mini_date_parser(date):
     #return f"{dia}/{('0' if numero_mes < 10 else '') + str(numero_mes)}/{ano}"
 
 def separa_partes(linha):
-    print(f">>> {linha}")
-
+    
     # Se a linha começar com None (como aconteceu com o PDF de novembro/2024), então a gente precisa de um "offset".
     # XXX: Seria interessante generalizar isso
     precisa_offset = (linha[0] == None)
@@ -50,8 +51,19 @@ def separa_partes(linha):
 
     endereco_bairro = partes_endereco[1:][0].split(",")
 
-    posto["endereço"] = ','.join(endereco_bairro[:-1])
+    posto["endereco"] = ','.join(endereco_bairro[:-1])
     posto["bairro"] = endereco_bairro[-1].strip()
+
+    # "kludge" para consertar símbolos que apareceram dentro do PDF
+
+    posto["nome"] = posto["nome"].replace('Ʃ', 'tt')
+    posto["nome"] = posto["nome"].replace('Ɵ', 'ti')
+
+    posto["bairro"] = posto["bairro"].replace('Ʃ', 'tt')
+    posto["bairro"] = posto["bairro"].replace('Ɵ', 'ti')
+
+    posto["endereco"] = posto["endereco"].replace('Ɵ', 'ti')
+    posto["endereco"] = posto["endereco"].replace('Ʃ', 'tt')
 
     posto["distribuidora"] = linha[2 + precisa_offset]
 
@@ -71,7 +83,7 @@ def separa_partes(linha):
         temp_numero = int(posto["bairro"])
         print(f"??? O posto {posto["id"]} tem número no lugar do bairro? Vamos fazer uma adaptação.")
         posto["bairro"] = None
-        posto["endereço"] = posto["endereço"] + ', ' + str(temp_numero)
+        posto["endereco"] = posto["endereco"] + ', ' + str(temp_numero)
 
     except: # int não deu certo, ou seja, não tem número no lugar do bairro
         pass
@@ -141,53 +153,58 @@ class PDFParser:
         """ Carrega as informações que lemos anteriormente. """
         # TODO: colocar tudo na mesma etapa, para ganharmos tempo e simplificarmos o código.
 
+        API_BASE = 'http://localhost:8000'
+
         data_pesquisa = mini_date_parser(self.data_pesquisa)
 
-        try:
-            self.database.cursor.execute("INSERT INTO Pesquisas(DataPesquisa) VALUES (?)", (data_pesquisa,))
-        except:
-            logging.error(f"A pesquisa de {data_pesquisa} já existe. Nada para fazer!")
-            return 
+        # Criar nova pesquisa chamando a API 
 
-        logging.info(f"Primeira passagem: carregando as distribuidoras...")
+        result = requests.post(f"{API_BASE}/pesquisa/nova", json={"data": data_pesquisa})
+
+        if result.status_code != 200:
+            logging.error(f"Erro ao criar pesquisa! {result.status_code} - {result.text}")
+            return
+        
+        id_pesquisa = result.json()["id"]
+
+        logging.info(f"Pesquisa criada com sucesso no id {id_pesquisa}! {result.json()}")
+        
+        logging.info(f"Carregando as distribuidoras...")
         for posto in self.postos:
-            try:
-                self.database.cursor.execute("INSERT INTO Distribuidoras(NomeDistribuidora) VALUES(?)", (posto["distribuidora"],))
-            except: # Se cair aqui, é porque UNIQUE falhou. Não é um erro.
-                logging.warning(f"A distribuidora {posto['distribuidora']} já existe (não tem nada de errado nisso).")
-
-        self.database.cursor.execute("SELECT COUNT(IdDistribuidora) FROM Distribuidoras")
-        logging.info(f"Cadastrei {self.database.cursor.fetchone()[0]} distribuidoras.")
-
-        logging.info(f"Segunda passagem: carregando os postos...")
+            result = requests.post(f"{API_BASE}/distribuidora/nova", json={"nome": posto["distribuidora"]})
+            if result.status_code != 200:   
+                logging.warning(f"Distribuidora {posto['distribuidora']} já existe! (não tem nada de errado nisso)")
+            else:
+                logging.info(f"Distribuidora {posto['distribuidora']} cadastrada com sucesso!")
+            
+        logging.info(f"Carregando os postos...")
         for posto in self.postos:
             logging.info(f"Posto {posto['id']} de {self.total_postos}: {posto['nome']}...")
-            try:
-                self.database.cursor.execute("INSERT INTO PostosGasolina(IdPosto, IdDistribuidora, NomePosto, EnderecoPosto, BairroPosto) \
-                                              VALUES(?,(SELECT IdDistribuidora FROM Distribuidoras WHERE NomeDistribuidora=(?)), ?, ?, ?)",
-                                              (posto["id"], posto["distribuidora"], posto["nome"], posto["endereço"], posto["bairro"],))
-            except:
-                logging.warning(f"O posto {posto['id'], posto["nome"]} já está cadastrado (não tem nada de errado nisso, mas é bom revisar a tabela depois)")
-        self.database.cursor.execute("SELECT COUNT(IdPosto) FROM PostosGasolina")
-        logging.info(f"Cadastrei {self.database.cursor.fetchone()[0]} postos.")
-
+            result = requests.post(f"{API_BASE}/posto/novo", json=posto)
+        
         # Adicionar os preços.
-        logging.info(f"Terceira passagem: carregando os preços...")
-
-        id_pesquisa = self.database.cursor.execute("SELECT IdPesquisa FROM Pesquisas WHERE DataPesquisa=(?)", (data_pesquisa,)).fetchone()[0]
-
-        logging.info(f"o ID da pesquisa do dia {data_pesquisa} é {id_pesquisa}.")
+        logging.info(f"Terceira passagem: carregando os preços na pesquisa {id_pesquisa}...")
 
         for posto in self.postos:
-            self.database.cursor.execute('INSERT INTO Precos(IdPesquisa, IdPosto, PrecoGasolinaComum, \
-                                                                 PrecoGasolinaAditivada, PrecoGasolinaPremium, PrecoEtanol, PrecoDiesel, \
-                                                                 PrecoGNV) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', (id_pesquisa, 
-                                                                                                    posto["id"],
-                                                                                                    posto["comum"], 
-                                                                                                    posto["aditivada"], 
-                                                                                                    posto["premium"],
-                                                                                                    posto["etanol"], 
-                                                                                                    posto["diesel"], 
-                                                                                                    posto["gnv"],))
             
+            # Renomear as chaves para caberem no precoModel
+            # TODO: alterar as chaves para evitar esse renomeio
+            preco = {
+                "pesquisa": id_pesquisa,
+                "posto": posto["id"],
+                "precoGasolinaComum": posto.get("comum"),
+                "precoGasolinaAditivada": posto.get("aditivada"),
+                "precoGasolinaPremium": posto.get("premium"),
+                "precoEtanol": posto.get("etanol"),
+                "precoDiesel": posto.get("diesel"),
+                "precoGNV": posto.get("gnv"),
+            }
+
+            print(posto)
+
+            result = requests.post(f"{API_BASE}/preco/novo", json=preco)
+            if result.status_code != 200:
+                logging.error(f"Erro ao adicionar preço do posto {posto['id']}! {result.status_code} - {result.text}")
+            else:
+                logging.info(f"Preço do posto {posto['id']} adicionado com sucesso!")
 
