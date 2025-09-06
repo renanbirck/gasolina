@@ -44,7 +44,7 @@ O _front-end_ é implemetado no diretório `templates` dentro de `api`, usando B
     * No diretório `api`, rodar `fastapi dev main.py` para o modo de desenvolvedor.
 
 * Para rodar em ambiente de desenvolvimento, com um BD separado:
-    * Setar a variável de ambiente `DB_PATH` para o nome do BD a ser utilizado. 
+    * Setar a variável de ambiente `DB_PATH` para o nome do BD a ser utilizado. Se essa variável não estiver setada, presume-se que estamos usando o BD completo. 
     
 ## Deploy 
 
@@ -94,16 +94,15 @@ Para gerenciar a execução do _container_, temos duas opções:
     WantedBy=default.target
     ```
 
-Novamente, as configurações irão variar conforme o caso de uso.
+Novamente, as configurações irão variar conforme o caso de uso. Feito o _deploy_, é preciso reiniciar o _container_ (no caso de usarmos quadlet, basta reiniciar o serviço).
 
 ## Coisas a fazer:
 
 (em nenhuma ordem)
 ### Scraper e parser:
 * Automatizar o _scraping_.
-* Fazer a raspagem comunicar via API em vez de chamadas SQL diretamente no BD. Em desenvolvimento, mas ainda falta simplificar o código e fazer em "batch" em vez de uma entrada por vez.
-* Elaborar uma forma de, do zero, criar uma carga inicial de dados (talvez usando os PDFs de 2023 a 2025) e construir o BD sem precisar fornecer um binário no repositório.
-** Parcialmente resolvido, com "dump" do BD.
+* Fazer a raspagem comunicar via API em vez de chamadas SQL diretamente no BD. Em desenvolvimento, mas ainda falta simplificar o código e fazer em _batch_ em vez de uma entrada por vez.
+* Elaborar uma forma de, do zero, criar uma carga inicial de dados (talvez usando os PDFs de 2023 a 2025) e construir o BD sem precisar fornecer um binário no repositório. Parcialmente resolvido, com "dump" do BD.
 
 ### API:
 * ~~Atualmente, a imagem está muito grande. Ver se eu consigo reduzir o tamanho dela.~~ Resolvido usando Alpine, e não Debian.
@@ -111,6 +110,7 @@ Novamente, as configurações irão variar conforme o caso de uso.
 * Configurar Actions para rodar os testes e fazer o _deploy_ automaticamente.
 * Adicionar autenticação e _logging_.
 * Fazer com que seja possível usar outro BD (ex. PostgreSQL) no back-end.
+* Documentar os _endpoints_ da API. 
 
 ### Front-end: 
 * Integração com o Google Maps ou OpenStreetMap. 

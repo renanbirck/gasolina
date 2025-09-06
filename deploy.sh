@@ -15,6 +15,7 @@ REMOTE_MACHINE=renanbirck.rocks
 REMOTE_MACHINE_DATAPATH=/home/renan/gasolina/data
 DATABASE_FILE_NAME=pesquisas.db 
 
+SYSTEMD_SERVICE_NAME=gasolina  # Nome do serviço na máquina remota 
 TARGET_PORT=2222
 
 ## Adicionar o remoto 
@@ -28,12 +29,13 @@ podman image scp gasolina-api:latest BLOG::
 cowsay Terminei a Cópia
 
 ## Na máquina remota, reiniciar o container que acabamos de copiar.
+# 2025-08-16: Desativado, porque não precisamos mais copiar o BD, a criação é feita pela API
+#if ! ssh -p $TARGET_PORT $REMOTE_LOGIN@$REMOTE_MACHINE "test -e $REMOTE_MACHINE_DATAPATH/$DATABASE_FILE_NAME"; then
+#  echo "O arquivo do BD não existe na máquina remota! Vou copiar ele da nossa máquina."
+#  scp -p -P $TARGET_PORT data/$DATABASE_FILE_NAME $REMOTE_LOGIN@$REMOTE_MACHINE:$REMOTE_MACHINE_DATAPATH
+#fi
 
-if ! ssh -p $TARGET_PORT $REMOTE_LOGIN@$REMOTE_MACHINE "test -e $REMOTE_MACHINE_DATAPATH/$DATABASE_FILE_NAME"; then
-  echo "O arquivo do BD não existe na máquina remota! Vou copiar ele da nossa máquina."
-  scp -p -P $TARGET_PORT data/$DATABASE_FILE_NAME $REMOTE_LOGIN@$REMOTE_MACHINE:$REMOTE_MACHINE_DATAPATH
-fi
-
-ssh -p $TARGET_PORT $REMOTE_LOGIN@$REMOTE_MACHINE "podman run -dt -v $REMOTE_MACHINE_DATAPATH:/data:Z --name $API_TARGET -p 8000:8000 --replace $API_TARGET"
+ssh -p $TARGET_PORT $REMOTE_LOGIN@$REMOTE_MACHINE "systemctl --user restart $SYSTEMD_SERVICE_NAME"
+#"podman run -dt -v $REMOTE_MACHINE_DATAPATH:/data:Z --name $API_TARGET -p 8000:8000 --replace $API_TARGET"
 
 echo FIM.
