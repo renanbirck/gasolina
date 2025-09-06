@@ -101,7 +101,7 @@ Novamente, as configurações irão variar conforme o caso de uso. Feito o _depl
 (em nenhuma ordem)
 ### Scraper e parser:
 * Automatizar o _scraping_.
-* Fazer a raspagem comunicar via API em vez de chamadas SQL diretamente no BD. Em desenvolvimento, mas ainda falta simplificar o código e fazer em _batch_ em vez de uma entrada por vez.
+* Fazer a raspagem comunicar via API em vez de chamadas SQL diretamente no BD. Já funciona, mas ainda falta simplificar o código e fazer em _batch_ em vez de uma entrada por vez.
 * Elaborar uma forma de, do zero, criar uma carga inicial de dados (talvez usando os PDFs de 2023 a 2025) e construir o BD sem precisar fornecer um binário no repositório. Parcialmente resolvido, com "dump" do BD.
 
 ### API:
@@ -114,7 +114,7 @@ Novamente, as configurações irão variar conforme o caso de uso. Feito o _depl
 
 ### Front-end: 
 * Integração com o Google Maps ou OpenStreetMap. 
-* Usar TypeScript e algum framework, como React ou vue, no front-end.
+* Usar TypeScript e algum framework, como React ou vue, no front-end; ou explorar outras bibliotecas para geração de tabelas.
 * Mais análises (preço médio, máximo, mínimo, etc...).
 
 ## Problemas encontrados

@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Pesquisas de Preços de Combustíveis em Joinville/SC</title>
+    <title>Histórico do posto {{ dados_posto.nome }} - {{ dados_posto.id }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="/libs/tools.js"></script>
@@ -36,12 +36,12 @@
             {% for posto in dados_historico_posto %}
             <tr>
               <td> {{ posto.data }} </td>
-              <td> {{ '%.2f' % posto.gasolina_comum if posto.gasolina_comum else '---' }} </td>
-              <td> {{ '%.2f' % posto.gasolina_aditivada if posto.gasolina_aditivada else '---'}} </td>
-              <td> {{ '%.2f' % posto.gasolina_premium if posto.gasolina_premium else '---'}} </td>
-              <td> {{ '%.2f' % posto.etanol if posto.etanol else '---'}} </td>
-              <td> {{ '%.2f' % posto.diesel if posto.diesel else '---' }} </td>
-              <td> {{ '%.2f' % posto.GNV if posto.GNV else '---' }} </td>
+              <td> {{ ('%.2f' % posto.gasolina_comum if posto.gasolina_comum else '---') | replace(".", ",") }} </td>
+              <td> {{ ('%.2f' % posto.gasolina_aditivada if posto.gasolina_aditivada else '---') | replace (".", ",") }} </td>
+              <td> {{ ('%.2f' % posto.gasolina_premium if posto.gasolina_premium else '---') | replace (".", ",") }} </td>
+              <td> {{ ('%.2f' % posto.etanol if posto.etanol else '---') | replace (".", ",") }} </td>
+              <td> {{ ('%.2f' % posto.diesel if posto.diesel else '---') | replace (".", ",") }} </td>
+              <td> {{ ('%.2f' % posto.GNV if posto.GNV else '---') | replace (".", ",") }} </td>
             </tr>
             {% endfor %}
 
