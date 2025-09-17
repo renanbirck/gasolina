@@ -158,7 +158,7 @@ class PDFParser:
             API_BASE = environ["GASOLINA_API_BASE"]
         except:
             logging.info("A variável de ambiente GASOLINA_API_BASE não está setada! Vou presumir que a API roda localmente.")
-            API_BASE = 'http://localhost:8000'
+            API_BASE = 'http://127.0.0.1:8000'
 
         logging.info(f"A nossa API fica em {API_BASE}.")
 

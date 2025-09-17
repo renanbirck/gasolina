@@ -21,7 +21,7 @@ build:
 	podman build -t $(CONTAINER_NAME) -f $(CONTAINER_DOCKERFILE) .
 	@cowsay "Container construído!"
 
-run-container-local:
+run-container-local: build
 	podman stop $(CONTAINER_NAME) || true
 	podman run -dt -v $(DATA_DIRECTORY):/data:Z -p 8000:8000 --name $(CONTAINER_NAME) --replace $(CONTAINER_NAME)
 	@echo "Acesse http://127.0.0.1:8000 no navegador."
@@ -31,6 +31,6 @@ deploy: build
 	podman image scp $(CONTAINER_NAME):latest BLOG:: 
 	@cowsay "Terminei a cópia!"
 
-restart-service: 
+restart-service: deploy 
 	ssh -p $(REMOTE_TARGET_PORT) $(REMOTE_LOGIN)@$(REMOTE_MACHINE) 'systemctl --user restart $(SYSTEMD_SERVICE_NAME)'
 	cowsay "Serviço reiniciado!"
