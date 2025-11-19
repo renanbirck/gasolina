@@ -1,11 +1,2 @@
 # Created by venv; see https://docs.python.org/3/library/venv.html
-scraper/data
-test_db
-__pycache__
-bin
-etc
-include
-lib64
-lib
-share
-*.db
+*
