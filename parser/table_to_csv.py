@@ -16,6 +16,7 @@ except:
 
 column_names = None
 extracted = []
+line_contents = []
 
 for page in doc:  # A cada página do PDF,
     page_tables = page.find_tables()  # procurar as tabelas.
@@ -44,8 +45,6 @@ for line, text in enumerate(extracted):
         except ValueError:  # Não é um número do tipo que a gente pediu (kind)
             return None
 
-    line_contents = []
-
     # OK, temos os dados: vamos mastigar para algo que possa ser convertido para CSV.
 
     try:
@@ -62,16 +61,23 @@ for line, text in enumerate(extracted):
             preco_gnv,
         ) = list(map(lambda x: number_or_none(x, float), text[3:]))
 
-        print(
-            [
-                id_posto,
-                preco_comum,
-                preco_aditivada,
-                preco_premium,
-                preco_diesel,
-                preco_etanol,
-                preco_gnv,
-            ]
-        )
+        if id_posto:
+            line_contents.append(
+                [
+                    id_posto,
+                    preco_comum,
+                    preco_aditivada,
+                    preco_premium,
+                    preco_diesel,
+                    preco_etanol,
+                    preco_gnv,
+                ]
+            )
     except:
         pass
+
+# Enfim, gerar o arquivo CSV. Nos campos onde estiver None, fica vazio.
+
+with open("result.csv", "w") as csv_file:
+    writer = csv.writer(csv_file)
+    writer.writerows(line_contents)
