@@ -76,3 +76,7 @@ UPDATE PostosGasolina SET NomePosto = 'Posto Agricopel' WHERE IdPosto = 39;
 UPDATE PostosGasolina SET NomePosto = 'Auto Posto Petroleum' WHERE IdPosto = 47;
 UPDATE PostosGasolina SET NomePosto = 'Posto Bravva (Antigo posto Hardt)' WHERE IdPosto = 77;
 UPDATE PostosGasolina SET NomePosto = 'Posto Estrela Odara (antigo Posto Mediterrâneo)' WHERE IdPosto = 87;
+
+-- Agora que fizemos as correções no BD, podemos criar a nova pesquisa!
+
+INSERT INTO Pesquisas(DataPesquisa) VALUES("20251117");
