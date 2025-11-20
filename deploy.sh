@@ -5,6 +5,7 @@
 # copiando o container e depois reiniciando ele. 
 #
 ####
+set -x
 
 API_TARGET=gasolina-api 
 API_DOCKERFILE=api/Dockerfile 
