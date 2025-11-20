@@ -37,6 +37,4 @@ for line, text in enumerate(extracted):
     try:
         num_posto = int(text[0])
     except:
-        if '202' in text[1]:
-            print(f"{text[1]}")
         print(f"Linha {line} não é um posto, pulando ela...")
