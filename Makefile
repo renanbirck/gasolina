@@ -28,7 +28,7 @@ run-container-local: build
 
 deploy: build 
 	podman system connection add BLOG $(REMOTE_LOGIN)@$(REMOTE_MACHINE):$(TARGET_PORT)/usr/lib/systemd/user/podman.socket
-	podman image scp $(CONTAINER_NAME):latest BLOG:: 
+	podman image scp $(CONTAINER_NAME):latest BLOG: 
 	@cowsay "Terminei a cópia!"
 
 restart-service: deploy 

@@ -28,7 +28,8 @@ with open(CSV_SOURCE, "r") as csvfile:
             new_row.append(entry)
 
         processed_rows.append(new_row)
-    print(processed_rows)
+    for row in processed_rows:
+        print(row)
 
 # OK, então fazer a inserção no BD!
 #
