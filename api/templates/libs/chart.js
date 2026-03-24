@@ -20,7 +20,7 @@ datasets = [];
 for(currentChart = 1; currentChart < lineLabels.length; currentChart++) {
   currentDataset = {
     label: lineLabels[currentChart],
-    data: getTableColumn("tabelaPrecos", currentChart).slice(1).map((value) => parseFloat(value)),
+    data: getTableColumn("tabelaPrecos", currentChart).slice(1).map((value) => parseFloat(value.replace(",","."))),
     borderWidth: 1
   }
 
