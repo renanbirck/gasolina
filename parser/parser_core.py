@@ -162,11 +162,14 @@ class PDFParser:
 
         logging.info(f"A nossa API fica em {API_BASE}.")
 
+        # As rotas de escrita da API exigem a chave.
+        headers = {"X-API-Key": environ.get("GASOLINA_API_KEY", "")}
+
         data_pesquisa = mini_date_parser(self.data_pesquisa)
 
 # Criar nova pesquisa chamando a API 
 
-        result = requests.post(f"{API_BASE}/pesquisa/nova", json={"data": data_pesquisa})
+        result = requests.post(f"{API_BASE}/pesquisa/nova", json={"data": data_pesquisa}, headers=headers)
 
         if result.status_code != 200:
             logging.error(f"Erro ao criar pesquisa! {result.status_code} - {result.text}")
@@ -178,7 +181,7 @@ class PDFParser:
         
         logging.info(f"Carregando as distribuidoras...")
         for posto in self.postos:
-            result = requests.post(f"{API_BASE}/distribuidora/nova", json={"nome": posto["distribuidora"]})
+            result = requests.post(f"{API_BASE}/distribuidora/nova", json={"nome": posto["distribuidora"]}, headers=headers)
             if result.status_code != 200:   
                 logging.warning(f"Distribuidora {posto['distribuidora']} já existe! (não tem nada de errado nisso)")
             else:
@@ -187,7 +190,7 @@ class PDFParser:
         logging.info(f"Carregando os postos...")
         for posto in self.postos:
             logging.info(f"Posto {posto['id']} de {self.total_postos}: {posto['nome']}...")
-            result = requests.post(f"{API_BASE}/posto/novo", json=posto)
+            result = requests.post(f"{API_BASE}/posto/novo", json=posto, headers=headers)
         
         # Adicionar os preços.
         logging.info(f"Terceira passagem: carregando os preços na pesquisa {id_pesquisa}...")
@@ -209,7 +212,7 @@ class PDFParser:
 
             print(posto)
 
-            result = requests.post(f"{API_BASE}/preco/novo", json=preco)
+            result = requests.post(f"{API_BASE}/preco/novo", json=preco, headers=headers)
             if result.status_code != 200:
                 logging.error(f"Erro ao adicionar preço do posto {posto['id']}! {result.status_code} - {result.text}")
             else:

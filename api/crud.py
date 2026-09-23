@@ -5,16 +5,13 @@ from datetime import datetime
 
 import logging
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s %(levelname)s %(name)s %(message)s"
-)
-logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
-
 
 ### Leitura
 def get_ultima_pesquisa(db: Session):
-    return db.query(models.Pesquisa).order_by(models.Pesquisa.id.desc()).first()
+    # Ordena pela data (AAAAMMDD) e não pelo ID, para que carregar uma pesquisa
+    # antiga depois não faça ela virar a "última".
+    return db.query(models.Pesquisa).order_by(models.Pesquisa.data.desc(),
+                                              models.Pesquisa.id.desc()).first()
 
 def get_pesquisas(db: Session):
     return db.query(models.Pesquisa).order_by(models.Pesquisa.id.desc()).all()
@@ -24,7 +21,7 @@ def get_distribuidoras(db: Session):
 
 def get_precos_ultima_pesquisa(db: Session):
     ultima_pesquisa = get_ultima_pesquisa(db)
-    return dados_pesquisa(db, ultima_pesquisa)
+    return dados_pesquisa(db, ultima_pesquisa.id) if ultima_pesquisa else []
 
 def get_postos(db: Session):
     query = db.query(models.PostoGasolina.id,
@@ -175,11 +172,10 @@ def adiciona_novo_posto(db: Session, posto: dict):
     ## Determinar o ID da distribuidora antes.
 
     logging.info(f"adicionando posto: {posto}")
-    try:
-        id_distribuidora = db.query(models.Distribuidora.id).where(models.Distribuidora.nome == posto.distribuidora).first()[0]
-        logging.info(f"O ID da distribuidora {posto.distribuidora} é {id_distribuidora}.")
-    except:
+    id_distribuidora = db.query(models.Distribuidora.id).where(models.Distribuidora.nome == posto.distribuidora).scalar()
+    if id_distribuidora is None:
         raise ValueError(f"??? ID da distribuidora {posto.distribuidora} desconhecido?")
+    logging.info(f"O ID da distribuidora {posto.distribuidora} é {id_distribuidora}.")
 
     novo_posto = models.PostoGasolina(id = posto.id,
                                       distribuidora = id_distribuidora,

@@ -2,14 +2,14 @@ from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Numeric, Un
 from typing import Optional
 from sqlalchemy.orm import relationship
 from .database import Base # Os modelos herdam de Base
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 class PesquisaModel(BaseModel):
-    id: int = None  # O ID da pesquisa é gerado automaticamente, por ser primary key
-    data: str
+    id: Optional[int] = None  # O ID da pesquisa é gerado automaticamente, por ser primary key
+    data: str = Field(pattern=r"^\d{8}$")  # AAAAMMDD, para que a ordenação por texto funcione
 
 class DistribuidoraModel(BaseModel):
-    id: int = None
+    id: Optional[int] = None
     nome: str
 
 class PostoModel(BaseModel):
@@ -20,7 +20,7 @@ class PostoModel(BaseModel):
     bairro: str
 
 class PrecoModel(BaseModel):    
-    id: int = None
+    id: Optional[int] = None
     pesquisa: int  # ID da pesquisa
     posto: int  # ID do posto
 

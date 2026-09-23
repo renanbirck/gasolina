@@ -47,7 +47,11 @@
     </table>
     <footer class="text-center mt-5">
       © 2025- <a href="mailto:renan.birck.pinheiro@gmail.com">Renan Birck Pinheiro</a> - <a href="https://github.com/renanbirck/gasolina">GitHub</a>
+    {% if ultima_pesquisa %}
     <p> Pesquisa mais atual: {{ ultima_pesquisa.data }} (ID {{ultima_pesquisa.id}})</p>
+    {% else %}
+    <p> Ainda não há nenhuma pesquisa cadastrada.</p>
+    {% endif %}
     </footer>
 
 
