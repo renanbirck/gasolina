@@ -233,6 +233,18 @@ def cria_novo_preco(preco: models.PrecoModel,
                                 "msg": str(v)})
                             ) # pyright: ignore[reportReturnType]
 
+@app.post("/pesquisa/importar", dependencies=[Depends(verifica_chave_api)])
+def importa_pesquisa(importacao: models.ImportacaoModel, db: Session = Depends(get_db)):
+    """ Importa uma pesquisa completa (postos, distribuidoras e preços) de forma atômica. """
+    logging.info(f'Importando a pesquisa de {importacao.data} com {len(importacao.postos)} postos.')
+    try:
+        return crud.importa_pesquisa(db, importacao)
+    except IntegrityError as e:
+        return erro_integridade(db, e, f"Já há uma pesquisa para essa data: {importacao.data}.")
+    except ValueError as v:
+        return JSONResponse(status_code=422,
+                            content=jsonable_encoder({"code": 422, "msg": str(v)}))
+
 ####### Configurações
 ## Para exibir imagens a partir do diretório templates/images.
 app.mount("/images", StaticFiles(directory=TEMPLATES_DIR / "images"), name='images')

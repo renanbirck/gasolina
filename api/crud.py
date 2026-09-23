@@ -234,4 +234,76 @@ def adiciona_novo_preco(db: Session, preco: dict):
 
     return novo_preco
 
+def importa_pesquisa(db: Session, importacao: models.ImportacaoModel):
+    """ Importa uma pesquisa inteira em uma única transação: distribuidoras e postos
+        novos, a pesquisa e todos os preços. Se qualquer passo falhar, nada é gravado,
+        então nunca fica uma pesquisa pela metade no BD. """
+
+    ids = [posto.id for posto in importacao.postos]
+    repetidos = sorted({i for i in ids if ids.count(i) > 1})
+    if repetidos:
+        raise ValueError(f"IDs de posto repetidos na importação: {repetidos}")
+
+    try:
+        # 1. Distribuidoras: cadastra só as que ainda não existem.
+        nomes = {posto.distribuidora for posto in importacao.postos}
+        distribuidoras = dict(db.query(models.Distribuidora.nome, models.Distribuidora.id)
+                                .filter(models.Distribuidora.nome.in_(nomes)).all())
+        novas_distribuidoras = sorted(nomes - distribuidoras.keys())
+        for nome in novas_distribuidoras:
+            distribuidora = models.Distribuidora(nome = nome)
+            db.add(distribuidora)
+            db.flush()  # para obter o ID
+            distribuidoras[nome] = distribuidora.id
+
+        # 2. Postos: cadastra os novos. Os que já existem só têm o cadastro atualizado
+        #    se esta pesquisa for a mais recente (para uma pesquisa antiga não
+        #    sobrescrever dados novos).
+        ultima = get_ultima_pesquisa(db)
+        atualiza_cadastro = ultima is None or importacao.data >= ultima.data
+
+        existentes = {posto.id: posto for posto in
+                      db.query(models.PostoGasolina).filter(models.PostoGasolina.id.in_(ids)).all()}
+        postos_novos = 0
+        for posto in importacao.postos:
+            dados = dict(distribuidora = distribuidoras[posto.distribuidora],
+                         nome = posto.nome,
+                         endereco = posto.endereco,
+                         bairro = posto.bairro)
+            if posto.id not in existentes:
+                db.add(models.PostoGasolina(id = posto.id, **dados))
+                postos_novos += 1
+            elif atualiza_cadastro:
+                for campo, valor in dados.items():
+                    setattr(existentes[posto.id], campo, valor)
+        db.flush()
+
+        # 3. A pesquisa e os preços.
+        pesquisa = models.Pesquisa(data = importacao.data)
+        db.add(pesquisa)
+        db.flush()
+
+        db.add_all([models.Preco(pesquisa = pesquisa.id,
+                                 posto = posto.id,
+                                 precoGasolinaComum = posto.comum,
+                                 precoGasolinaAditivada = posto.aditivada,
+                                 precoGasolinaPremium = posto.premium,
+                                 precoEtanol = posto.etanol,
+                                 precoDiesel = posto.diesel,
+                                 precoGNV = posto.gnv)
+                    for posto in importacao.postos])
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
+
+    logging.info(f"Pesquisa {pesquisa.id} ({pesquisa.data}) importada: {len(ids)} preços, "
+                 f"{postos_novos} postos novos, distribuidoras novas: {novas_distribuidoras}.")
+
+    return {"id": pesquisa.id,
+            "data": pesquisa.data,
+            "precos": len(ids),
+            "postos_novos": postos_novos,
+            "distribuidoras_novas": novas_distribuidoras}
+
 ### FIM.

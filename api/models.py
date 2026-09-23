@@ -1,5 +1,5 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Numeric, UniqueConstraint
-from typing import Optional
+from typing import List, Optional
 from sqlalchemy.orm import relationship
 from .database import Base # Os modelos herdam de Base
 from pydantic import BaseModel, Field
@@ -17,7 +17,7 @@ class PostoModel(BaseModel):
     distribuidora: str  # O nome da distribuidora será resolvido depois, dentro do CRUD
     nome: str
     endereco: str
-    bairro: str
+    bairro: Optional[str] = None  # Às vezes a prefeitura não informa o bairro
 
 class PrecoModel(BaseModel):    
     id: Optional[int] = None
@@ -31,6 +31,26 @@ class PrecoModel(BaseModel):
     precoEtanol: Optional[float] = None 
     precoDiesel: Optional[float] = None 
     precoGNV: Optional[float] = None 
+
+class PostoImportacaoModel(BaseModel):
+    """ Um posto e seus preços, do jeito que o parser extrai do PDF. """
+    id: int
+    distribuidora: str
+    nome: str
+    endereco: str
+    bairro: Optional[str] = None
+
+    comum: Optional[float] = None
+    aditivada: Optional[float] = None
+    premium: Optional[float] = None
+    etanol: Optional[float] = None
+    diesel: Optional[float] = None
+    gnv: Optional[float] = None
+
+class ImportacaoModel(BaseModel):
+    """ Uma pesquisa completa, importada de uma vez só (ver crud.importa_pesquisa). """
+    data: str = Field(pattern=r"^\d{8}$")
+    postos: List[PostoImportacaoModel] = Field(min_length=1)
 
 class Pesquisa(Base):
     __tablename__ =  "Pesquisas"
@@ -49,7 +69,7 @@ class PostoGasolina(Base):
     distribuidora = Column("IdDistribuidora", Integer, ForeignKey('Distribuidoras.IdDistribuidora', ondelete='RESTRICT'))
     nome = Column("NomePosto", String, nullable=False)
     endereco = Column("EnderecoPosto", String, nullable=False)
-    bairro = Column("BairroPosto", String, nullable=False)
+    bairro = Column("BairroPosto", String, nullable=True)
 
 class Preco(Base):
     __tablename__ = "Precos"
