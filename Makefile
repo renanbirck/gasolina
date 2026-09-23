@@ -27,7 +27,7 @@ run-container-local: build
 	@echo "Acesse http://127.0.0.1:8000 no navegador."
 
 deploy: build 
-	podman system connection add BLOG $(REMOTE_LOGIN)@$(REMOTE_MACHINE):$(TARGET_PORT)/usr/lib/systemd/user/podman.socket
+	podman system connection add BLOG $(REMOTE_LOGIN)@$(REMOTE_MACHINE):$(REMOTE_TARGET_PORT)/usr/lib/systemd/user/podman.socket
 	podman image scp $(CONTAINER_NAME):latest BLOG: 
 	@cowsay "Terminei a cópia!"
 

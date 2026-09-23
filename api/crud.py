@@ -286,6 +286,9 @@ def importa_pesquisa(db: Session, importacao: models.ImportacaoModel):
                 postos_novos += 1
             elif atualiza_cadastro:
                 for campo, valor in dados.items():
+                    # Um PDF sem o bairro não apaga o bairro que já conhecemos.
+                    if campo == "bairro" and valor is None:
+                        continue
                     setattr(existentes[posto.id], campo, valor)
         db.flush()
 
