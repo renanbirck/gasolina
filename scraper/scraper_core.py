@@ -7,7 +7,12 @@ from os import makedirs, replace
 from os.path import isfile, getsize, join
 from urllib.parse import urljoin, urlparse, unquote
 
-goal_URL = lambda year: f"https://www.joinville.sc.gov.br/publicacoes/pesquisas-de-precos-combustiveis-{year}"
+# A prefeitura mudou o endereço da página em 2026 (entrou o "procon"); os anos anteriores
+# continuam no endereço antigo. Tentamos os dois, do mais novo para o mais antigo.
+goal_URLs = lambda year: [
+    f"https://www.joinville.sc.gov.br/publicacoes/pesquisas-de-precos-procon-combustiveis-{year}/",
+    f"https://www.joinville.sc.gov.br/publicacoes/pesquisas-de-precos-combustiveis-{year}/",
+]
 
 TIMEOUT = 60  # segundos; sem isso, uma conexão travada deixa o scraper parado para sempre
 
@@ -34,6 +39,18 @@ def get_PDFs_of_URL(url: str):
             links.append(href)
     logging.info(f"Encontrei os links: {links}")
     return links
+
+def get_PDFs_of_year(year):
+    """ Retorna os links dos PDFs do ano, a partir da primeira página que existir. """
+    for url in goal_URLs(year):
+        try:
+            return get_PDFs_of_URL(url)
+        except requests.HTTPError as e:
+            if e.response is not None and e.response.status_code == 404:
+                logging.info(f"A página {url} não existe, tentando o próximo endereço.")
+                continue
+            raise
+    raise ValueError(f"Nenhuma página de pesquisas encontrada para {year}!")
 
 def download_file(url: str, subdirectory: str = 'data'):
     """ Baixa o arquivo especificado, colocando ele no diretório informado em subdirectory.

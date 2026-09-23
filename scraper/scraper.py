@@ -12,8 +12,11 @@ def scrap():
         YEAR = date.today().strftime("%Y")
         logging.info(f"Não fui informado um ano... presumindo que é o ano de {YEAR}.")
 
-    URL = scraper_core.goal_URL(YEAR)
-    PDFs = scraper_core.get_PDFs_of_URL(URL)
+    try:
+        PDFs = scraper_core.get_PDFs_of_year(YEAR)
+    except ValueError as e:
+        logging.error(e)
+        return 1
 
     # Um download com problema não impede os outros, mas o código de saída indica a falha.
     falhas = 0
