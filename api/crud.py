@@ -5,16 +5,13 @@ from datetime import datetime
 
 import logging
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s %(levelname)s %(name)s %(message)s"
-)
-logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
-
 
 ### Leitura
 def get_ultima_pesquisa(db: Session):
-    return db.query(models.Pesquisa).order_by(models.Pesquisa.id.desc()).first()
+    # Ordena pela data (AAAAMMDD) e não pelo ID, para que carregar uma pesquisa
+    # antiga depois não faça ela virar a "última".
+    return db.query(models.Pesquisa).order_by(models.Pesquisa.data.desc(),
+                                              models.Pesquisa.id.desc()).first()
 
 def get_pesquisas(db: Session):
     return db.query(models.Pesquisa).order_by(models.Pesquisa.id.desc()).all()
@@ -24,7 +21,7 @@ def get_distribuidoras(db: Session):
 
 def get_precos_ultima_pesquisa(db: Session):
     ultima_pesquisa = get_ultima_pesquisa(db)
-    return dados_pesquisa(db, ultima_pesquisa)
+    return dados_pesquisa(db, ultima_pesquisa.id) if ultima_pesquisa else []
 
 def get_postos(db: Session):
     query = db.query(models.PostoGasolina.id,
@@ -149,6 +146,17 @@ def dados_pesquisa(db: Session, id_pesquisa: int):
 
     return postos
 
+COLUNAS_PRECOS = ["gasolina_comum", "gasolina_aditivada", "gasolina_premium", "etanol", "diesel", "GNV"]
+
+def extremos_precos(postos: list):
+    """ Para cada combustível, retorna o (menor, maior) preço entre os postos, para
+        destacar na tabela. Calculado uma vez no servidor, sobre todos os postos. """
+    extremos = {}
+    for coluna in COLUNAS_PRECOS:
+        valores = [posto[coluna] for posto in postos if posto[coluna]]
+        extremos[coluna] = (min(valores), max(valores)) if valores else (None, None)
+    return extremos
+
 ### Funções para escrita no BD
 
 def adiciona_nova_pesquisa(db: Session, data_pesquisa: str):
@@ -175,11 +183,10 @@ def adiciona_novo_posto(db: Session, posto: dict):
     ## Determinar o ID da distribuidora antes.
 
     logging.info(f"adicionando posto: {posto}")
-    try:
-        id_distribuidora = db.query(models.Distribuidora.id).where(models.Distribuidora.nome == posto.distribuidora).first()[0]
-        logging.info(f"O ID da distribuidora {posto.distribuidora} é {id_distribuidora}.")
-    except:
+    id_distribuidora = db.query(models.Distribuidora.id).where(models.Distribuidora.nome == posto.distribuidora).scalar()
+    if id_distribuidora is None:
         raise ValueError(f"??? ID da distribuidora {posto.distribuidora} desconhecido?")
+    logging.info(f"O ID da distribuidora {posto.distribuidora} é {id_distribuidora}.")
 
     novo_posto = models.PostoGasolina(id = posto.id,
                                       distribuidora = id_distribuidora,
@@ -237,5 +244,80 @@ def adiciona_novo_preco(db: Session, preco: dict):
     db.refresh(novo_preco)
 
     return novo_preco
+
+def importa_pesquisa(db: Session, importacao: models.ImportacaoModel):
+    """ Importa uma pesquisa inteira em uma única transação: distribuidoras e postos
+        novos, a pesquisa e todos os preços. Se qualquer passo falhar, nada é gravado,
+        então nunca fica uma pesquisa pela metade no BD. """
+
+    ids = [posto.id for posto in importacao.postos]
+    repetidos = sorted({i for i in ids if ids.count(i) > 1})
+    if repetidos:
+        raise ValueError(f"IDs de posto repetidos na importação: {repetidos}")
+
+    try:
+        # 1. Distribuidoras: cadastra só as que ainda não existem.
+        nomes = {posto.distribuidora for posto in importacao.postos}
+        distribuidoras = dict(db.query(models.Distribuidora.nome, models.Distribuidora.id)
+                                .filter(models.Distribuidora.nome.in_(nomes)).all())
+        novas_distribuidoras = sorted(nomes - distribuidoras.keys())
+        for nome in novas_distribuidoras:
+            distribuidora = models.Distribuidora(nome = nome)
+            db.add(distribuidora)
+            db.flush()  # para obter o ID
+            distribuidoras[nome] = distribuidora.id
+
+        # 2. Postos: cadastra os novos. Os que já existem só têm o cadastro atualizado
+        #    se esta pesquisa for a mais recente (para uma pesquisa antiga não
+        #    sobrescrever dados novos).
+        ultima = get_ultima_pesquisa(db)
+        atualiza_cadastro = ultima is None or importacao.data >= ultima.data
+
+        existentes = {posto.id: posto for posto in
+                      db.query(models.PostoGasolina).filter(models.PostoGasolina.id.in_(ids)).all()}
+        postos_novos = 0
+        for posto in importacao.postos:
+            dados = dict(distribuidora = distribuidoras[posto.distribuidora],
+                         nome = posto.nome,
+                         endereco = posto.endereco,
+                         bairro = posto.bairro)
+            if posto.id not in existentes:
+                db.add(models.PostoGasolina(id = posto.id, **dados))
+                postos_novos += 1
+            elif atualiza_cadastro:
+                for campo, valor in dados.items():
+                    # Um PDF sem o bairro não apaga o bairro que já conhecemos.
+                    if campo == "bairro" and valor is None:
+                        continue
+                    setattr(existentes[posto.id], campo, valor)
+        db.flush()
+
+        # 3. A pesquisa e os preços.
+        pesquisa = models.Pesquisa(data = importacao.data)
+        db.add(pesquisa)
+        db.flush()
+
+        db.add_all([models.Preco(pesquisa = pesquisa.id,
+                                 posto = posto.id,
+                                 precoGasolinaComum = posto.comum,
+                                 precoGasolinaAditivada = posto.aditivada,
+                                 precoGasolinaPremium = posto.premium,
+                                 precoEtanol = posto.etanol,
+                                 precoDiesel = posto.diesel,
+                                 precoGNV = posto.gnv)
+                    for posto in importacao.postos])
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
+
+    logging.info(f"Pesquisa {pesquisa.id} ({pesquisa.data}) importada: {len(ids)} preços, "
+                 f"{postos_novos} postos novos, distribuidoras novas: {novas_distribuidoras}.")
+
+    return {"id": pesquisa.id,
+            "data": pesquisa.data,
+            "precos": len(ids),
+            "postos_novos": postos_novos,
+            "distribuidoras_novas": novas_distribuidoras}
 
 ### FIM.

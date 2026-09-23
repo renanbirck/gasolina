@@ -2,3 +2,22 @@ bin
 lib
 lib64
 share
+
+# Ambiente virtual na raiz do repositório
+include
+pyvenv.cfg
+
+__pycache__/
+
+# O BD é versionado como dump (data/pesquisas.sql); ver data/dump_db.sh
+*.db
+*.db-wal
+*.db-shm
+
+# PDFs baixados pelo scraper (os de referência dos testes continuam versionados)
+*.pdf
+!parser/references/*.pdf
+*.part
+
+# Segredos (chave da API de produção); ver a seção "Chave da API" do README
+*.env

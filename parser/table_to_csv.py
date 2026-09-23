@@ -20,8 +20,8 @@ line_contents = []
 
 for page in doc:  # A cada página do PDF,
     page_tables = page.find_tables()  # procurar as tabelas.
-    if page_tables.tables == []:  # Não tem tabela? Segue em frente.
-        pass
+    if not page_tables.tables:  # Não tem tabela? Segue em frente.
+        continue
 
     tab = page_tables[0]
     header = tab.header

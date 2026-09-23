@@ -39,6 +39,7 @@ O _front-end_ é implemetado no diretório `templates` dentro de `api`, usando B
 
 * Para rodar o _parser_:
 	* No diretório `parser`, rodar o _script_ `run_parser.sh`, fornecendo um arquivo adequado como parâmetro.
+	* O _parser_ envia a pesquisa para a API (`POST /pesquisa/importar`). Ele lê as variáveis de ambiente `GASOLINA_API_BASE` (se não estiver setada, usa `http://127.0.0.1:8000`) e `GASOLINA_API_KEY` (ver "Chave da API", abaixo). Para enviar para produção: `set -a; source gasolina.env; set +a` antes de rodar.
 
 * Para rodar a _api_ durante o desenvolvimento:
     * No diretório `api`, rodar `fastapi dev main.py` para o modo de desenvolvedor.
@@ -50,7 +51,7 @@ O _front-end_ é implemetado no diretório `templates` dentro de `api`, usando B
 
 Primeiramente, é preciso construir o _container_: `podman build -t gasolina-api -f api/Dockerfile .`.
 
-Para facilitar o _deploy_, adicionei a máquina remota no `podman system connection add REMOTE [ENDEREÇO DA MÁQUINA]:22/usr/lib/systemd/user/podman.socket` e, então, basta executar o comando `podman image scp gasolina-api:latest REMOTE::`. É preciso que o acesso via `ssh` a essa máquina remota esteja sendo feito por chave e não por senha.
+Para facilitar o _deploy_, adicionei a máquina remota no `podman system connection add REMOTE ssh://[USUÁRIO]@[ENDEREÇO DA MÁQUINA]:[PORTA]/run/user/[UID]/podman/podman.sock` e, então, basta executar o comando `podman image scp gasolina-api:latest REMOTE::`. É preciso que o acesso via `ssh` a essa máquina remota esteja sendo feito por chave e não por senha (se a chave tiver senha, ela precisa estar carregada no `ssh-agent`).
 
 Em seguida, na máquina remota, é preciso executar o comando `podman run -dt -v [LOCAL ONDE FICA O BD]:/data:Z --name gasolina-api -p 8000:8000 --replace gasolina-api` para subir o servidor. O local onde fica o BD deve ser configurado conforme o servidor.  
 
@@ -86,6 +87,7 @@ Para gerenciar a execução do _container_, temos duas opções:
     PublishPort=8000:8000
     Network=host
     Volume=/home/renan/gasolina/data:/data:Z
+    EnvironmentFile=%h/.config/containers/systemd/gasolina.env
 
     [Service]
     Restart=always
@@ -94,7 +96,51 @@ Para gerenciar a execução do _container_, temos duas opções:
     WantedBy=default.target
     ```
 
-Novamente, as configurações irão variar conforme o caso de uso. Feito o _deploy_, é preciso reiniciar o _container_ (no caso de usarmos quadlet, basta reiniciar o serviço).
+Novamente, as configurações irão variar conforme o caso de uso. Feito o _deploy_, é preciso reiniciar o _container_ (no caso de usarmos quadlet, basta reiniciar o serviço). Com o `Makefile`, `make restart-service` faz tudo: constrói, copia e reinicia; `make deploy` sozinho **não** reinicia o serviço.
+
+### Chave da API
+
+As rotas de escrita (`POST /pesquisa/nova`, `/distribuidora/nova`, `/posto/novo`, `/preco/novo` e `/pesquisa/importar`) exigem o _header_ `X-API-Key` com o valor da variável de ambiente `GASOLINA_API_KEY` do servidor. Sem a chave (ou com a chave errada), a API responde 401; se a variável não estiver setada no servidor, a escrita fica desativada (403). As rotas de leitura (`GET`) continuam abertas.
+
+* No servidor, a chave fica em `~/.config/containers/systemd/gasolina.env` (permissão `600`), no formato `GASOLINA_API_KEY=...`, e é carregada pelo `EnvironmentFile=` do `gasolina.container`.
+* Na máquina de desenvolvimento, uma cópia fica em `gasolina.env`, na raiz do repositório (permissão `600`), junto com `GASOLINA_API_BASE`. **Esse arquivo não é versionado** (`*.env` está no `.gitignore`).
+* Para trocar a chave: gerar uma nova (`openssl rand -hex 32`), atualizar os dois arquivos e rodar `systemctl --user restart gasolina` no servidor.
+
+### Voltando para a versão anterior
+
+Antes de cada _deploy_, guardar a imagem que está no ar: `podman tag gasolina-api:latest gasolina-api:previous` (no servidor). Se algo der errado:
+
+    podman tag gasolina-api:previous gasolina-api:latest && systemctl --user restart gasolina
+
+### Logs
+
+Os logs da aplicação estão no `podman logs systemd-gasolina` (o `journalctl --user -u gasolina` pode não mostrar nada).
+
+### Registro de _deploys_
+
+#### 2026-09-23: branch `revisao-desempenho-robustez`
+
+Antes do _deploy_, a produção rodava exatamente o código da `main` (conferido por _hash_ dos arquivos da API). Verificações feitas no BD de produção (`/home/renan/gasolina/data/pesquisas.db`), todas sem problemas:
+
+* Nenhum preço duplicado para o mesmo par (pesquisa, posto), então o novo índice único pôde ser criado;
+* `PRAGMA foreign_key_check` sem órfãos e `PRAGMA integrity_check` = `ok` (agora as chaves estrangeiras são aplicadas);
+* As 39 datas de pesquisa já estavam no formato `AAAAMMDD`, que passou a ser exigido;
+* `BairroPosto` já aceitava nulo no BD (2 postos sem bairro).
+
+O que foi feito:
+
+1. No servidor: `podman tag gasolina-api:latest gasolina-api:previous` (imagem antiga: `032c02eedb88`);
+2. No servidor: criada a chave da API em `~/.config/containers/systemd/gasolina.env` e adicionado o `EnvironmentFile=` ao `gasolina.container` (o original ficou em `gasolina.container.bak-20260923`);
+3. Localmente: `podman build -t gasolina-api -f api/Dockerfile .` (imagem nova: `63f5ee3db603`) e `podman image scp gasolina-api:latest BLOG::`;
+4. No servidor: `systemctl --user daemon-reload && systemctl --user restart gasolina`.
+
+Depois do _deploy_:
+
+* `/`, `/environment` (`PROD`), `/ultima_pesquisa`, `/historico/72`, `/pesquisas` e `https://gasolina.renanbirck.rocks/` respondem 200;
+* `POST` sem chave ou com chave errada: 401; com a chave certa (e dados inválidos, para não gravar nada): 422;
+* O BD passou para o modo WAL e ganhou os índices `uix_pesquisa_posto` e `ix_precos_posto` (criados pela própria API ao iniciar). O _backup_ diário (`dump_database.sh`, com `sqlite3 .dump`) continua funcionando com WAL.
+
+Pendências (opcionais): remover a tabela `result` (101 linhas, sobra de alguma importação manual) do BD de produção e limpar as imagens `<none>` do servidor (`podman image prune`). O filtro de `POST` no nginx (`~/blog-docker/nginx/sites/gasolina`) continua comentado, mas agora a própria API exige a chave.
 
 ## Coisas a fazer:
 
@@ -108,7 +154,7 @@ Novamente, as configurações irão variar conforme o caso de uso. Feito o _depl
 * ~~Atualmente, a imagem está muito grande. Ver se eu consigo reduzir o tamanho dela.~~ Resolvido usando Alpine, e não Debian.
 * Integrar os testes com o _container_.
 * Configurar Actions para rodar os testes e fazer o _deploy_ automaticamente.
-* Adicionar autenticação e _logging_.
+* Adicionar autenticação e _logging_. Parcialmente resolvido: as rotas de escrita exigem a chave da API.
 * Fazer com que seja possível usar outro BD (ex. PostgreSQL) no back-end.
 * Documentar os _endpoints_ da API. 
 

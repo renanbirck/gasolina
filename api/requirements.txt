@@ -1,0 +1,4 @@
+# Dependências da API (usadas pelo api/Dockerfile). Versões fixas para o build ser reprodutível.
+fastapi[standard]==0.141.1
+SQLAlchemy==2.0.54
+Jinja2==3.1.6
