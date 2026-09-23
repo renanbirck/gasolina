@@ -146,6 +146,17 @@ def dados_pesquisa(db: Session, id_pesquisa: int):
 
     return postos
 
+COLUNAS_PRECOS = ["gasolina_comum", "gasolina_aditivada", "gasolina_premium", "etanol", "diesel", "GNV"]
+
+def extremos_precos(postos: list):
+    """ Para cada combustível, retorna o (menor, maior) preço entre os postos, para
+        destacar na tabela. Calculado uma vez no servidor, sobre todos os postos. """
+    extremos = {}
+    for coluna in COLUNAS_PRECOS:
+        valores = [posto[coluna] for posto in postos if posto[coluna]]
+        extremos[coluna] = (min(valores), max(valores)) if valores else (None, None)
+    return extremos
+
 ### Funções para escrita no BD
 
 def adiciona_nova_pesquisa(db: Session, data_pesquisa: str):

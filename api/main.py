@@ -265,7 +265,8 @@ async def raiz_app(request: Request, db: Session = Depends(get_db)):
     return templates.TemplateResponse(
         request=request, name="index.html",
         context={"ultima_pesquisa": data_ultima_pesquisa,
-                 "dados_ultima_pesquisa": dados_ultima_pesquisa}
+                 "dados_ultima_pesquisa": dados_ultima_pesquisa,
+                 "extremos": crud.extremos_precos(dados_ultima_pesquisa)}
     )
 
 logging.info("--- Rotas da aplicação ---")
