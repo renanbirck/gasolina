@@ -18,3 +18,6 @@ __pycache__/
 *.pdf
 !parser/references/*.pdf
 *.part
+
+# Segredos (chave da API de produção); ver a seção "Chave da API" do README
+*.env
